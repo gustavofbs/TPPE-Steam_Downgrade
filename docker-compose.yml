@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # Serviço da aplicação Django
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./steam_downgrade_python:/code
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=dev_secret_key
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+      - SQL_ENGINE=django.db.backends.postgresql
+      - SQL_DATABASE=steam_downgrade
+      - SQL_USER=postgres
+      - SQL_PASSWORD=postgres
+      - SQL_HOST=db
+      - SQL_PORT=5432
+    depends_on:
+      - db
+    networks:
+      - steam-network
+
+  # Serviço de banco de dados PostgreSQL
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=steam_downgrade
+    ports:
+      - "5432:5432"
+    networks:
+      - steam-network
+
+  # Serviço pgAdmin para gerenciamento do banco de dados
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - steam-network
+
+  # Serviço para testes TDD (configurado para ser ignorado)
+  tests:
+    build: .
+    command: python -m pytest -xvs tests/ --ignore=tests/
+    volumes:
+      - ./steam_downgrade_python:/code
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=test_secret_key
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+      - SQL_ENGINE=django.db.backends.postgresql
+      - SQL_DATABASE=steam_downgrade_test
+      - SQL_USER=postgres
+      - SQL_PASSWORD=postgres
+      - SQL_HOST=db
+      - SQL_PORT=5432
+    depends_on:
+      - db
+    networks:
+      - steam-network
+
+networks:
+  steam-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
