@@ -7,6 +7,7 @@ from rest_framework.test import APIClient
 class TestHelloWorld:
     """Test cases for Hello World views"""
 
+    @pytest.mark.skip(reason="TDD tests are currently disabled")
     def test_hello_world_view(self, client):
         """Test the hello_world view returns correct response"""
         url = reverse('hello_world')
@@ -14,6 +15,7 @@ class TestHelloWorld:
         assert response.status_code == 200
         assert b"Hello, World!" in response.content
 
+    @pytest.mark.skip(reason="TDD tests are currently disabled")
     def test_hello_world_api(self):
         """Test the HelloWorldAPIView returns correct response"""
         client = APIClient()

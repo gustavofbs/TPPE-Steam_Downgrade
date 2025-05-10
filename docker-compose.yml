@@ -54,7 +54,7 @@ services:
   # Serviço para testes TDD (configurado para ser ignorado)
   tests:
     build: .
-    command: python -m pytest -xvs tests/ --ignore=tests/
+    command: bash -c "PGPASSWORD=postgres psql -h db -U postgres -c 'CREATE DATABASE steam_downgrade_test;' || true && python -m pytest -xvs tests/ -v"
     volumes:
       - ./steam_downgrade_python:/code
     environment:
