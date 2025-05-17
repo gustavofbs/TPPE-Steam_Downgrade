@@ -1,6 +1,6 @@
 ## Visão Geral
 
-  Projeto de refatoração do Steam Downgrade, um trabalho de Orientação de Objetos.
+  Projeto de refatoração do Steam Downgrade, um trabalho de Orientação de Objetos. O repositório original pode ser conferido [aqui](https://github.com/leomitx10/Steam-Downgrade)
 
 
 ## Backlog de Histórias de Usuário - Steam Downgrade
