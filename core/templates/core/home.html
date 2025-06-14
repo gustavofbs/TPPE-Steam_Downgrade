@@ -1,0 +1,147 @@
+{% extends "core/base.html" %}
+{% block title %}SteamRF - Início{% endblock %}
+{% block content %}
+<div class="hero-section text-center">
+    <h1 class="display-4">Bem-vindo ao SteamRF</h1>
+    <p class="lead">Sua plataforma de jogos digitais</p>
+    {% if not user.is_authenticated %}
+    <div class="mt-4">
+        <a href="{% url 'users:register' %}" class="btn btn-primary me-2">Registrar</a>
+        <a href="{% url 'users:login' %}" class="btn btn-outline-light">Entrar</a>
+    </div>
+    {% else %}
+    <div class="mt-4">
+        <a href="{% url 'core:dashboard' %}" class="btn btn-primary">Minha Biblioteca</a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>Jogos em Destaque</h2>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Jogos em destaque (simulados) -->
+    <div class="col-md-4 mb-4">
+        <div class="card game-card">
+            <img src="https://via.placeholder.com/350x200?text=Jogo+1" class="card-img-top" alt="Jogo 1">
+            <div class="card-body">
+                <h5 class="card-title">Jogo 1</h5>
+                <p class="card-text">Um jogo incrível com gráficos impressionantes e jogabilidade envolvente.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">R$ 99,90</span>
+                    <a href="#" class="btn btn-primary btn-sm">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card game-card">
+            <img src="https://via.placeholder.com/350x200?text=Jogo+2" class="card-img-top" alt="Jogo 2">
+            <div class="card-body">
+                <h5 class="card-title">Jogo 2</h5>
+                <p class="card-text">Um RPG de mundo aberto com uma história cativante e personagens memoráveis.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">R$ 149,90</span>
+                    <a href="#" class="btn btn-primary btn-sm">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card game-card">
+            <img src="https://via.placeholder.com/350x200?text=Jogo+3" class="card-img-top" alt="Jogo 3">
+            <div class="card-body">
+                <h5 class="card-title">Jogo 3</h5>
+                <p class="card-text">Um jogo de estratégia desafiador que testará suas habilidades de planejamento.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">R$ 79,90</span>
+                    <a href="#" class="btn btn-primary btn-sm">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h2>Promoções</h2>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Jogos em promoção (simulados) -->
+    <div class="col-md-3 mb-4">
+        <div class="card game-card">
+            <div class="position-absolute top-0 end-0 bg-danger text-white p-2">-50%</div>
+            <img src="https://via.placeholder.com/350x200?text=Jogo+4" class="card-img-top" alt="Jogo 4">
+            <div class="card-body">
+                <h5 class="card-title">Jogo 4</h5>
+                <p class="card-text">Um jogo de ação cheio de adrenalina.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-decoration-line-through">R$ 89,90</span>
+                        <span class="fw-bold text-danger ms-2">R$ 44,95</span>
+                    </div>
+                    <a href="#" class="btn btn-primary btn-sm">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card game-card">
+            <div class="position-absolute top-0 end-0 bg-danger text-white p-2">-30%</div>
+            <img src="https://via.placeholder.com/350x200?text=Jogo+5" class="card-img-top" alt="Jogo 5">
+            <div class="card-body">
+                <h5 class="card-title">Jogo 5</h5>
+                <p class="card-text">Um simulador realista com gráficos incríveis.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-decoration-line-through">R$ 129,90</span>
+                        <span class="fw-bold text-danger ms-2">R$ 90,93</span>
+                    </div>
+                    <a href="#" class="btn btn-primary btn-sm">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card game-card">
+            <div class="position-absolute top-0 end-0 bg-danger text-white p-2">-70%</div>
+            <img src="https://via.placeholder.com/350x200?text=Jogo+6" class="card-img-top" alt="Jogo 6">
+            <div class="card-body">
+                <h5 class="card-title">Jogo 6</h5>
+                <p class="card-text">Um jogo de aventura com quebra-cabeças desafiadores.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-decoration-line-through">R$ 69,90</span>
+                        <span class="fw-bold text-danger ms-2">R$ 20,97</span>
+                    </div>
+                    <a href="#" class="btn btn-primary btn-sm">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card game-card">
+            <div class="position-absolute top-0 end-0 bg-danger text-white p-2">-25%</div>
+            <img src="https://via.placeholder.com/350x200?text=Jogo+7" class="card-img-top" alt="Jogo 7">
+            <div class="card-body">
+                <h5 class="card-title">Jogo 7</h5>
+                <p class="card-text">Um jogo de corrida com física realista.</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-decoration-line-through">R$ 119,90</span>
+                        <span class="fw-bold text-danger ms-2">R$ 89,93</span>
+                    </div>
+                    <a href="#" class="btn btn-primary btn-sm">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

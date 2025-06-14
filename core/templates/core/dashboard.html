@@ -1,0 +1,207 @@
+{% extends "core/base.html" %}
+{% block title %}SteamRF - Minha Biblioteca{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1>Minha Biblioteca</h1>
+        <p class="lead">Bem-vindo à sua biblioteca de jogos, {{ user.username }}!</p>
+        <hr>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="library-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="all-games-tab" data-bs-toggle="tab" data-bs-target="#all-games" type="button" role="tab" aria-controls="all-games" aria-selected="true">Todos os Jogos</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="installed-tab" data-bs-toggle="tab" data-bs-target="#installed" type="button" role="tab" aria-controls="installed" aria-selected="false">Instalados</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="recent-tab" data-bs-toggle="tab" data-bs-target="#recent" type="button" role="tab" aria-controls="recent" aria-selected="false">Jogados Recentemente</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="library-content">
+                    <div class="tab-pane fade show active" id="all-games" role="tabpanel" aria-labelledby="all-games-tab">
+                        <div class="row">
+                            <!-- Simulação de jogos na biblioteca -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <img src="https://via.placeholder.com/150x200?text=Jogo+1" class="img-fluid rounded-start" alt="Jogo 1">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Jogo 1</h5>
+                                                <p class="card-text">Última vez jogado: Ontem</p>
+                                                <div class="d-grid gap-2">
+                                                    <button class="btn btn-primary btn-sm">Jogar</button>
+                                                    <button class="btn btn-outline-light btn-sm">Desinstalar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <img src="https://via.placeholder.com/150x200?text=Jogo+2" class="img-fluid rounded-start" alt="Jogo 2">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Jogo 2</h5>
+                                                <p class="card-text">Última vez jogado: 3 dias atrás</p>
+                                                <div class="d-grid gap-2">
+                                                    <button class="btn btn-primary btn-sm">Jogar</button>
+                                                    <button class="btn btn-outline-light btn-sm">Desinstalar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <img src="https://via.placeholder.com/150x200?text=Jogo+3" class="img-fluid rounded-start" alt="Jogo 3">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Jogo 3</h5>
+                                                <p class="card-text">Não instalado</p>
+                                                <div class="d-grid gap-2">
+                                                    <button class="btn btn-primary btn-sm">Instalar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <img src="https://via.placeholder.com/150x200?text=Jogo+4" class="img-fluid rounded-start" alt="Jogo 4">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Jogo 4</h5>
+                                                <p class="card-text">Não instalado</p>
+                                                <div class="d-grid gap-2">
+                                                    <button class="btn btn-primary btn-sm">Instalar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="installed" role="tabpanel" aria-labelledby="installed-tab">
+                        <div class="row">
+                            <!-- Jogos instalados -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <img src="https://via.placeholder.com/150x200?text=Jogo+1" class="img-fluid rounded-start" alt="Jogo 1">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Jogo 1</h5>
+                                                <p class="card-text">Última vez jogado: Ontem</p>
+                                                <div class="d-grid gap-2">
+                                                    <button class="btn btn-primary btn-sm">Jogar</button>
+                                                    <button class="btn btn-outline-light btn-sm">Desinstalar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <img src="https://via.placeholder.com/150x200?text=Jogo+2" class="img-fluid rounded-start" alt="Jogo 2">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Jogo 2</h5>
+                                                <p class="card-text">Última vez jogado: 3 dias atrás</p>
+                                                <div class="d-grid gap-2">
+                                                    <button class="btn btn-primary btn-sm">Jogar</button>
+                                                    <button class="btn btn-outline-light btn-sm">Desinstalar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="recent" role="tabpanel" aria-labelledby="recent-tab">
+                        <div class="row">
+                            <!-- Jogos recentes -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="row g-0">
+                                        <div class="col-md-4">
+                                            <img src="https://via.placeholder.com/150x200?text=Jogo+1" class="img-fluid rounded-start" alt="Jogo 1">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Jogo 1</h5>
+                                                <p class="card-text">Última vez jogado: Ontem</p>
+                                                <p class="card-text"><small>Tempo jogado: 12 horas</small></p>
+                                                <div class="d-grid gap-2">
+                                                    <button class="btn btn-primary btn-sm">Jogar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Estatísticas</h5>
+            </div>
+            <div class="card-body">
+                <p>Total de jogos: <strong>4</strong></p>
+                <p>Jogos instalados: <strong>2</strong></p>
+                <p>Tempo total de jogo: <strong>35 horas</strong></p>
+                <p>Conquistas desbloqueadas: <strong>15/120</strong></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Amigos Online</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-center">Funcionalidade de amigos em breve!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
