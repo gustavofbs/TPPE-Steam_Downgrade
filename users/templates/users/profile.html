@@ -1,0 +1,98 @@
+{% extends "users/base.html" %}
+{% block title %}Perfil - SteamRF{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">{{ user.username }}</h3>
+            </div>
+            <div class="card-body text-center">
+                <img src="{{ user.profile.avatar.url }}" alt="Avatar" class="rounded-circle img-fluid mb-3" style="max-width: 150px;">
+                {% if user.profile.bio %}
+                    <p>{{ user.profile.bio }}</p>
+                {% endif %}
+                {% if user.profile.birth_date %}
+                    <p>Data de nascimento: {{ user.profile.birth_date }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Editar Perfil</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <fieldset>
+                        <legend class="border-bottom mb-4">Informações do Usuário</legend>
+                        <div class="mb-3">
+                            <label for="{{ u_form.username.id_for_label }}" class="form-label">Nome de usuário</label>
+                            {{ u_form.username }}
+                            {% if u_form.username.errors %}
+                                <div class="text-danger">
+                                    {% for error in u_form.username.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ u_form.email.id_for_label }}" class="form-label">Email</label>
+                            {{ u_form.email }}
+                            {% if u_form.email.errors %}
+                                <div class="text-danger">
+                                    {% for error in u_form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend class="border-bottom mb-4">Informações do Perfil</legend>
+                        <div class="mb-3">
+                            <label for="{{ p_form.bio.id_for_label }}" class="form-label">Biografia</label>
+                            {{ p_form.bio }}
+                            {% if p_form.bio.errors %}
+                                <div class="text-danger">
+                                    {% for error in p_form.bio.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ p_form.birth_date.id_for_label }}" class="form-label">Data de nascimento</label>
+                            {{ p_form.birth_date }}
+                            {% if p_form.birth_date.errors %}
+                                <div class="text-danger">
+                                    {% for error in p_form.birth_date.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ p_form.avatar.id_for_label }}" class="form-label">Avatar</label>
+                            {{ p_form.avatar }}
+                            {% if p_form.avatar.errors %}
+                                <div class="text-danger">
+                                    {% for error in p_form.avatar.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" type="submit">Atualizar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

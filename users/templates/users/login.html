@@ -1,0 +1,52 @@
+{% extends "users/base.html" %}
+{% block title %}Login - SteamRF{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center">Entrar</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <fieldset>
+                        <div class="mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">Nome de usuário</label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.username.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="{{ form.password.id_for_label }}" class="form-label">Senha</label>
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" type="submit">Entrar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <small>
+                    <a href="{% url 'users:password_reset' %}">Esqueceu sua senha?</a>
+                    <br>
+                    Não tem uma conta? <a href="{% url 'users:register' %}">Registrar</a>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

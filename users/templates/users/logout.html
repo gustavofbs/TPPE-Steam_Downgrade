@@ -1,0 +1,17 @@
+{% extends "users/base.html" %}
+{% block title %}Logout - SteamRF{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-center">Você saiu da sua conta</h2>
+            </div>
+            <div class="card-body text-center">
+                <p>Você foi desconectado com sucesso.</p>
+                <a href="{% url 'users:login' %}" class="btn btn-primary">Entrar novamente</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
