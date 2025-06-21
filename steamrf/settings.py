@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'core',
     'games',
     'purchases',
+    'social',
 ]
 
 MIDDLEWARE = [
