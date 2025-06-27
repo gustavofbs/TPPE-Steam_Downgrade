@@ -20,6 +20,22 @@ services:
       - DB_PASS=postgres
       - DEBUG=1
 
+  test:
+    build: .
+    command: pytest -xvs
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_HOST=db
+      - DB_NAME=test_steamrf
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DJANGO_SETTINGS_MODULE=steamrf.settings
+      - PYTEST_ADDOPTS="--cov=. --cov-report=term"
+
   db:
     image: postgres:14
     volumes:
