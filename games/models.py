@@ -92,6 +92,11 @@ class Game(models.Model):
     def is_pre_order(self):
         """Verifica se o jogo está em pré-venda"""
         return self.release_date > timezone.now().date()
+
+    def get_cover_image(self):
+        """Retorna a imagem marcada como capa entre as imagens relacionadas ao jogo."""
+        cover = self.images.filter(is_cover=True).first()
+        return cover.image if cover else None
     
     def __str__(self):
         return self.title
