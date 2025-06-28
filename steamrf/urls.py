@@ -19,10 +19,34 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+# Importações para a documentação da API
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
     path('', include('core.urls')),
+    
+    # API URLs
+    path('api/v1/', include([
+        # Documentação da API
+        path('schema/', SpectacularAPIView.as_view(), name='schema'),
+        path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+        path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+        
+        # Incluir URLs das APIs dos apps
+        path('users/', include('users.api.urls')),
+        # path('games/', include('games.api.urls')),
+        # path('purchases/', include('purchases.api.urls')),
+        # path('social/', include('social.api.urls')),
+    ])),
+    
+    # API auth
+    path('api-auth/', include('rest_framework.urls')),
 ]
 
 # Adicionar URLs para servir arquivos de mídia durante o desenvolvimento
