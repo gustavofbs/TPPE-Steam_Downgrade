@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -99,6 +100,11 @@ class Game(models.Model):
         """Retorna a imagem marcada como capa entre as imagens relacionadas ao jogo."""
         cover = self.images.filter(is_cover=True).first()
         return cover.image if cover else None
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return self.title

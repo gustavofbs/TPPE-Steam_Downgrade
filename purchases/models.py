@@ -2,7 +2,9 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 from games.models import Game, GameVersion
+from decimal import Decimal
 
 class Cart(models.Model):
     """Modelo para o carrinho de compras do usuário"""
@@ -48,6 +50,8 @@ class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    coupon_code = models.CharField(max_length=50, blank=True)
+    coupon_discount = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     payment_method = models.CharField(max_length=100, blank=True)
@@ -74,6 +78,10 @@ class OrderItem(models.Model):
     
     def subtotal(self):
         return (self.price - self.discount) * self.quantity
+
+    def clean(self):
+        if self.discount > self.price:
+            raise ValidationError("O desconto não pode ser maior que o preço.")
 
 class Library(models.Model):
     """Modelo para a biblioteca de jogos do usuário"""
@@ -103,10 +111,21 @@ class LibraryItem(models.Model):
         return f"{self.game.title} - {self.library}"
     
     def formatted_playtime(self):
-        """Retorna o tempo de jogo formatado em horas e minutos"""
         hours = self.playtime // 60
         minutes = self.playtime % 60
-        return f"{hours}h {minutes}min"
+
+        parts = []
+        if hours == 1:
+            parts.append("1 hora")
+        elif hours > 1:
+            parts.append(f"{hours} horas")
+
+        if minutes == 1:
+            parts.append("1 minuto")
+        elif minutes > 1 or (minutes == 0 and hours == 0):
+            parts.append(f"{minutes} minutos")
+
+        return " e ".join(parts)
 
 class DownloadHistory(models.Model):
     """Modelo para histórico de downloads de jogos e versões"""
@@ -161,6 +180,11 @@ class Coupon(models.Model):
     
     def __str__(self):
         return f"{self.code} ({self.discount_percent}% off)"
+
+    def calculate_discount(self, amount):
+        """Retorna o valor de desconto aplicável a um valor dado"""
+        discount_rate = Decimal(self.discount_percent) / Decimal("100")
+        return (discount_rate * amount).quantize(Decimal("0.01"))
     
     def is_valid(self):
         now = timezone.now()
