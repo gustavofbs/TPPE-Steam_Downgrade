@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 from games.models import Game
 
 class Friendship(models.Model):
@@ -18,6 +19,14 @@ class Friendship(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        if self.sender == self.receiver:
+            raise ValidationError("Você não pode ser amigo de si mesmo.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Garante que clean() será chamado antes de salvar
+        super().save(*args, **kwargs)
     
     class Meta:
         unique_together = ('sender', 'receiver')
@@ -74,6 +83,14 @@ class ReviewVote(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='review_votes')
     vote_type = models.CharField(max_length=11, choices=VOTE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def clean(self):
+        if self.user == self.review.user:
+            raise ValidationError("Você não pode votar na sua própria avaliação.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # chama clean() e aplica as validações antes de salvar
+        super().save(*args, **kwargs)
     
     class Meta:
         unique_together = ('review', 'user')
@@ -114,6 +131,14 @@ class GameRecommendation(models.Model):
     message = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+
+    def clean(self):
+        if self.sender == self.receiver:
+            raise ValidationError("Você não pode recomendar um jogo para si mesmo.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return f"{self.sender.username} recomendou {self.game.title} para {self.receiver.username}"
