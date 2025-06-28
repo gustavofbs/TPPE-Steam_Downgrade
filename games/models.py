@@ -25,6 +25,7 @@ class Developer(models.Model):
     website = models.URLField(blank=True)
     founded_date = models.DateField(null=True, blank=True)
     logo = models.ImageField(upload_to='developers/', blank=True)
+    is_active = models.BooleanField(default=True)
     
     def __str__(self):
         return self.name
@@ -39,6 +40,7 @@ class Publisher(models.Model):
     website = models.URLField(blank=True)
     founded_date = models.DateField(null=True, blank=True)
     logo = models.ImageField(upload_to='publishers/', blank=True)
+    is_active = models.BooleanField(default=True)
     
     def __str__(self):
         return self.name
@@ -112,9 +114,21 @@ class GameVersion(models.Model):
     description = models.TextField(blank=True)
     is_available = models.BooleanField(default=True)
     file_size_mb = models.PositiveIntegerField(null=True, validators=[MinValueValidator(1)])
+    download_url = models.URLField(blank=True)
+
+    @property
+    def formatted_file_size(self):
+        """Retorna o tamanho do arquivo em MB ou GB formatado."""
+        if self.file_size_mb is None:
+            return "Desconhecido"
+        
+        if self.file_size_mb >= 1024:
+            gb = self.file_size_mb / 1024
+            return f"{gb:.2f} GB"
+        return f"{self.file_size_mb} MB"
     
     def __str__(self):
-        return f"{self.game.title} - v{self.version_number}"
+        return f"{self.game.title} - {self.version_number}"
     
     class Meta:
         ordering = ['-release_date']
@@ -160,7 +174,7 @@ class SystemRequirement(models.Model):
     additional_notes = models.TextField(blank=True)
     
     def __str__(self):
-        return f"{self.game.title} - {self.get_requirement_type_display()}"
+        return f"Requisitos {self.get_requirement_type_display()} - {self.game.title}"
     
     class Meta:
         unique_together = ['game', 'requirement_type']
