@@ -1,7 +1,10 @@
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 from django.conf import settings
+from decimal import Decimal
+
 
 class Genre(models.Model):
     """Modelo para gêneros de jogos (ação, aventura, RPG, etc.)"""
@@ -66,12 +69,29 @@ class Game(models.Model):
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     
-    def current_price(self):
-        """Calcula o preço atual com desconto"""
+    @property
+    def discount_price(self):
+        """Calcula o preço com desconto"""
         if self.discount_percent > 0:
-            discount = (self.discount_percent / 100) * self.base_price
-            return self.base_price - discount
+            discount_rate = Decimal(self.discount_percent) / Decimal("100")
+            discount = discount_rate * self.base_price
+            final_price = self.base_price - discount
+            return final_price.quantize(Decimal("0.01"))
         return self.base_price
+    
+    def current_price(self):
+        """Calcula o preço atual com desconto (mantido para compatibilidade)"""
+        return self.discount_price
+        
+    @property
+    def is_on_sale(self):
+        """Verifica se o jogo está em promoção"""
+        return self.discount_percent > 0
+    
+    @property
+    def is_pre_order(self):
+        """Verifica se o jogo está em pré-venda"""
+        return self.release_date > timezone.now().date()
     
     def __str__(self):
         return self.title
@@ -86,6 +106,7 @@ class GameVersion(models.Model):
     release_date = models.DateField()
     description = models.TextField(blank=True)
     is_available = models.BooleanField(default=True)
+    file_size_mb = models.PositiveIntegerField(null=True, validators=[MinValueValidator(1)])
     
     def __str__(self):
         return f"{self.game.title} - v{self.version_number}"
@@ -100,9 +121,18 @@ class GameImage(models.Model):
     image = models.ImageField(upload_to='games/screenshots/')
     caption = models.CharField(max_length=200, blank=True)
     order = models.PositiveIntegerField(default=0)
+    is_cover = models.BooleanField(default=False)
     
     def __str__(self):
         return f"Image for {self.game.title}"
+
+    def clean(self):
+        if self.is_cover:
+            existing_cover = GameImage.objects.filter(game=self.game, is_cover=True)
+            if self.pk:
+                existing_cover = existing_cover.exclude(pk=self.pk)
+            if existing_cover.exists():
+                raise ValidationError("Já existe uma imagem de capa para este jogo.")
     
     class Meta:
         ordering = ['order']
