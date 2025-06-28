@@ -96,7 +96,7 @@ class ReviewVote(models.Model):
         unique_together = ('review', 'user')
     
     def __str__(self):
-        return f"{self.user.username} votou {self.get_vote_type_display()} na avaliação de {self.review.user.username}"
+        return f"{self.user.username} votou '{self.get_vote_type_display()}' na avaliação de {self.review.user.username}"
 
 class UserActivity(models.Model):
     """Modelo para atividades dos usuários na plataforma"""
@@ -121,7 +121,7 @@ class UserActivity(models.Model):
         verbose_name_plural = 'User activities'
     
     def __str__(self):
-        return f"{self.user.username} - {self.get_activity_type_display()} - {self.created_at}"
+        return f"{self.user.username}: {self.description}"
 
 class GameRecommendation(models.Model):
     """Modelo para recomendações de jogos entre amigos"""
