@@ -110,6 +110,14 @@ class Game(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
+
+    def discount_amount(self):
+        """Retorna o valor absoluto do desconto aplicado no jogo."""
+        if self.discount_percent > 0:
+            discount = (Decimal(self.discount_percent) / Decimal("100")) * self.base_price
+            return discount.quantize(Decimal("0.01"))
+        return Decimal("0.00")
+
     
     def __str__(self):
         return self.title

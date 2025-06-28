@@ -41,7 +41,7 @@ urlpatterns = [
         # Incluir URLs das APIs dos apps
         path('users/', include('users.api.urls')),
         path('games/', include('games.api.urls')),
-        # path('purchases/', include('purchases.api.urls')),
+        path('purchases/', include('purchases.api.urls')),
         # path('social/', include('social.api.urls')),
     ])),
     
