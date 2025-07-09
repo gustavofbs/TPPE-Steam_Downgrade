@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import RedirectView
 
 # Importações para a documentação da API
 from drf_spectacular.views import (
@@ -30,6 +31,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
     path('', include('core.urls')),
+    
+    # Redirecionamento para a documentação
+    path('docs/', RedirectView.as_view(url='/api/v1/docs/', permanent=True)),
     
     # API URLs
     path('api/v1/', include([

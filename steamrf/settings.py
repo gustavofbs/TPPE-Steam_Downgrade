@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'social',
     # Apps de terceiros
     'rest_framework',
+    'rest_framework.authtoken',  # Autenticação por token
     'drf_spectacular',
     'corsheaders',
 ]
@@ -153,6 +154,7 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -173,6 +175,20 @@ SPECTACULAR_SETTINGS = {
         'persistAuthorization': True,
         'displayOperationId': True,
     },
+    'SECURITY_DEFINITIONS': {
+        'Token': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization',
+            'description': 'Insira seu token no formato: Token <seu-token-aqui>'
+        },
+        'Basic': {
+            'type': 'basic',
+            'description': 'Autenticação básica com usuário e senha'
+        }
+    },
+    'COMPONENT_SPLIT_REQUEST': True,
+    'COMPONENT_NO_READ_ONLY_REQUIRED': False,
 }
 
 # CORS settings
