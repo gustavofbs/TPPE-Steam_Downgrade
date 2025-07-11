@@ -1,96 +1,228 @@
 {% extends "users/base.html" %}
+{% load form_tags %}
 {% block title %}Perfil - SteamRF{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-container {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+    .profile-card {
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        height: 100%;
+    }
+    .profile-header {
+        border-radius: 8px 8px 0 0;
+        padding: 1rem;
+    }
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border: 4px solid var(--steam-accent);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .profile-info {
+        background-color: rgba(21, 101, 192, 0.05);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    .input-icon {
+        position: absolute;
+        z-index: 10;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--steam-text);
+    }
+    .form-control-icon {
+        padding-left: 35px;
+    }
+    .section-title {
+        color: var(--steam-accent);
+        border-bottom: 2px solid var(--steam-accent);
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+    }
+    .avatar-preview {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+    .avatar-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    .avatar-preview:hover .avatar-overlay {
+        opacity: 1;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="text-center">{{ user.username }}</h3>
-            </div>
-            <div class="card-body text-center">
-                <img src="{{ user.profile.avatar.url }}" alt="Avatar" class="rounded-circle img-fluid mb-3" style="max-width: 150px;">
-                {% if user.profile.bio %}
-                    <p>{{ user.profile.bio }}</p>
-                {% endif %}
-                {% if user.profile.birth_date %}
-                    <p>Data de nascimento: {{ user.profile.birth_date }}</p>
-                {% endif %}
-            </div>
+<div class="container profile-container">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h1 class="display-5 fw-bold"><i class="fas fa-user-circle me-2"></i>Seu Perfil</h1>
+            <p class="lead">Gerencie suas informações pessoais e preferências</p>
         </div>
     </div>
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="text-center">Editar Perfil</h3>
-            </div>
-            <div class="card-body">
-                <form method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <fieldset>
-                        <legend class="border-bottom mb-4">Informações do Usuário</legend>
-                        <div class="mb-3">
-                            <label for="{{ u_form.username.id_for_label }}" class="form-label">Nome de usuário</label>
-                            {{ u_form.username }}
-                            {% if u_form.username.errors %}
-                                <div class="text-danger">
-                                    {% for error in u_form.username.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
+    
+    <div class="row">
+        <!-- Coluna do perfil -->
+        <div class="col-md-4 mb-4">
+            <div class="card profile-card">
+                <div class="card-header profile-header bg-dark text-center">
+                    <h3 class="mb-0"><i class="fas fa-id-card me-2"></i>{{ user.username }}</h3>
+                </div>
+                <div class="card-body text-center p-4">
+                    <div class="avatar-preview">
+                        <img src="{{ user.profile.avatar.url }}" alt="Avatar" class="rounded-circle img-fluid profile-avatar mb-3">
+                        <div class="avatar-overlay">
+                            <i class="fas fa-camera me-1"></i>Alterar avatar
                         </div>
-                        <div class="mb-3">
-                            <label for="{{ u_form.email.id_for_label }}" class="form-label">Email</label>
-                            {{ u_form.email }}
-                            {% if u_form.email.errors %}
-                                <div class="text-danger">
-                                    {% for error in u_form.email.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </fieldset>
-                    <fieldset>
-                        <legend class="border-bottom mb-4">Informações do Perfil</legend>
-                        <div class="mb-3">
-                            <label for="{{ p_form.bio.id_for_label }}" class="form-label">Biografia</label>
-                            {{ p_form.bio }}
-                            {% if p_form.bio.errors %}
-                                <div class="text-danger">
-                                    {% for error in p_form.bio.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="mb-3">
-                            <label for="{{ p_form.birth_date.id_for_label }}" class="form-label">Data de nascimento</label>
-                            {{ p_form.birth_date }}
-                            {% if p_form.birth_date.errors %}
-                                <div class="text-danger">
-                                    {% for error in p_form.birth_date.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="mb-3">
-                            <label for="{{ p_form.avatar.id_for_label }}" class="form-label">Avatar</label>
-                            {{ p_form.avatar }}
-                            {% if p_form.avatar.errors %}
-                                <div class="text-danger">
-                                    {% for error in p_form.avatar.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </fieldset>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-primary" type="submit">Atualizar</button>
                     </div>
-                </form>
+                    
+                    <h4 class="mb-3">{{ user.get_full_name|default:user.username }}</h4>
+                    <p class="text-muted"><i class="fas fa-envelope me-2"></i>{{ user.email }}</p>
+                    
+                    <div class="profile-info">
+                        {% if user.profile.bio %}
+                            <div class="mb-3">
+                                <h5 class="mb-2"><i class="fas fa-quote-left me-2"></i>Biografia</h5>
+                                <p class="mb-0">{{ user.profile.bio }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        {% if user.profile.birth_date %}
+                            <div>
+                                <h5 class="mb-2"><i class="fas fa-birthday-cake me-2"></i>Data de nascimento</h5>
+                                <p class="mb-0">{{ user.profile.birth_date|date:"d/m/Y" }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer text-center py-3">
+                    <p class="mb-0 small">Membro desde {{ user.date_joined|date:"d/m/Y" }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Coluna de edição -->
+        <div class="col-md-8">
+            <div class="card profile-card">
+                <div class="card-header profile-header bg-dark">
+                    <h3 class="mb-0 text-center"><i class="fas fa-user-edit me-2"></i>Editar Perfil</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Informações do Usuário -->
+                        <h4 class="section-title"><i class="fas fa-user me-2"></i>Informações do Usuário</h4>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ u_form.username.id_for_label }}" class="form-label">
+                                    <i class="fas fa-user me-1"></i> Nome de usuário
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-user input-icon"></i>
+                                    {{ u_form.username|add_class:"form-control form-control-icon" }}
+                                </div>
+                                {% if u_form.username.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in u_form.username.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ u_form.email.id_for_label }}" class="form-label">
+                                    <i class="fas fa-envelope me-1"></i> Email
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-envelope input-icon"></i>
+                                    {{ u_form.email|add_class:"form-control form-control-icon" }}
+                                </div>
+                                {% if u_form.email.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in u_form.email.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Informações do Perfil -->
+                        <h4 class="section-title"><i class="fas fa-address-card me-2"></i>Informações do Perfil</h4>
+                        <div class="mb-3">
+                            <label for="{{ p_form.bio.id_for_label }}" class="form-label">
+                                <i class="fas fa-quote-left me-1"></i> Biografia
+                            </label>
+                            {{ p_form.bio|add_class:"form-control" }}
+                            {% if p_form.bio.errors %}
+                                <div class="text-danger mt-1">
+                                    {% for error in p_form.bio.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Conte um pouco sobre você e seus interesses em jogos.</div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ p_form.birth_date.id_for_label }}" class="form-label">
+                                    <i class="fas fa-birthday-cake me-1"></i> Data de nascimento
+                                </label>
+                                <div class="position-relative">
+                                    <i class="fas fa-calendar input-icon"></i>
+                                    {{ p_form.birth_date|add_class:"form-control form-control-icon" }}
+                                </div>
+                                {% if p_form.birth_date.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in p_form.birth_date.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ p_form.avatar.id_for_label }}" class="form-label">
+                                    <i class="fas fa-image me-1"></i> Avatar
+                                </label>
+                                {{ p_form.avatar|add_class:"form-control" }}
+                                {% if p_form.avatar.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in p_form.avatar.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">Imagem recomendada: 200x200 pixels.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-steam btn-lg" type="submit">
+                                <i class="fas fa-save me-2"></i>Salvar Alterações
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

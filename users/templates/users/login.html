@@ -1,51 +1,119 @@
 {% extends "users/base.html" %}
+{% load form_tags %}
 {% block title %}Login - SteamRF{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-container {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+    .login-card {
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+    .login-header {
+        border-radius: 8px 8px 0 0;
+        padding: 1.5rem;
+    }
+    .login-footer {
+        border-radius: 0 0 8px 8px;
+    }
+    .steam-logo {
+        max-width: 150px;
+        margin-bottom: 1rem;
+    }
+    .input-icon {
+        position: absolute;
+        z-index: 10;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--steam-text);
+    }
+    .form-control-icon {
+        padding-left: 35px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h2 class="text-center">Entrar</h2>
+<div class="row justify-content-center login-container">
+    <div class="col-md-5">
+        <div class="text-center mb-4">
+            <h1 class="display-5 fw-bold"><i class="fas fa-gamepad me-2"></i>SteamRF</h1>
+            <p class="lead">Acesse sua conta para gerenciar seus jogos e versões</p>
+        </div>
+        
+        <div class="card login-card">
+            <div class="card-header login-header bg-dark">
+                <h2 class="text-center mb-0"><i class="fas fa-sign-in-alt me-2"></i>Entrar</h2>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 <form method="POST">
                     {% csrf_token %}
                     <fieldset>
-                        <div class="mb-3">
-                            <label for="{{ form.username.id_for_label }}" class="form-label">Nome de usuário</label>
-                            {{ form.username }}
+                        <div class="mb-4 position-relative">
+                            <label for="{{ form.username.id_for_label }}" class="form-label">
+                                <i class="fas fa-user me-1"></i> Nome de usuário
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-user input-icon"></i>
+                                {{ form.username|add_class:"form-control form-control-icon" }}
+                            </div>
                             {% if form.username.errors %}
-                                <div class="text-danger">
+                                <div class="text-danger mt-1">
                                     {% for error in form.username.errors %}
-                                        {{ error }}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
                                     {% endfor %}
                                 </div>
                             {% endif %}
                         </div>
-                        <div class="mb-3">
-                            <label for="{{ form.password.id_for_label }}" class="form-label">Senha</label>
-                            {{ form.password }}
+                        <div class="mb-4 position-relative">
+                            <label for="{{ form.password.id_for_label }}" class="form-label">
+                                <i class="fas fa-lock me-1"></i> Senha
+                            </label>
+                            <div class="position-relative">
+                                <i class="fas fa-lock input-icon"></i>
+                                {{ form.password|add_class:"form-control form-control-icon" }}
+                            </div>
                             {% if form.password.errors %}
-                                <div class="text-danger">
+                                <div class="text-danger mt-1">
                                     {% for error in form.password.errors %}
-                                        {{ error }}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Lembrar de mim</label>
                         </div>
                     </fieldset>
                     <div class="d-grid gap-2">
-                        <button class="btn btn-primary" type="submit">Entrar</button>
+                        <button class="btn btn-steam btn-lg" type="submit">
+                            <i class="fas fa-sign-in-alt me-2"></i>Entrar
+                        </button>
                     </div>
                 </form>
             </div>
-            <div class="card-footer text-center">
-                <small>
-                    <a href="{% url 'users:password_reset' %}">Esqueceu sua senha?</a>
-                    <br>
-                    Não tem uma conta? <a href="{% url 'users:register' %}">Registrar</a>
-                </small>
+            <div class="card-footer login-footer text-center py-3">
+                <div class="mb-2">
+                    <a href="{% url 'users:password_reset' %}" class="text-steam">
+                        <i class="fas fa-key me-1"></i>Esqueceu sua senha?
+                    </a>
+                </div>
+                <div>
+                    Não tem uma conta? 
+                    <a href="{% url 'users:register' %}" class="text-steam fw-bold">
+                        <i class="fas fa-user-plus me-1"></i>Registrar-se
+                    </a>
+                </div>
             </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <p class="text-muted small">© 2025 SteamRF. Todos os direitos reservados.</p>
         </div>
     </div>
 </div>

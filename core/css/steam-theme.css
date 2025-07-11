@@ -1,0 +1,117 @@
+/* Steam Theme CSS */
+:root {
+  --steam-dark-blue: #1b2838;
+  --steam-darker-blue: #171a21;
+  --steam-medium-blue: #2a475e;
+  --steam-light-blue: #66c0f4;
+  --steam-highlight-blue: #1b9ae4;
+  --steam-text: #c7d5e0;
+  --steam-input-bg: #316282;
+  --steam-success: #5c7e10;
+  --steam-error: #c94a4a;
+  --steam-form-label: #a3c6e0; 
+}
+
+body {
+  background-color: var(--steam-dark-blue);
+  color: var(--steam-text);
+}
+
+.navbar {
+  background-color: var(--steam-darker-blue) !important;
+}
+
+.card {
+  background-color: var(--steam-medium-blue);
+  border-color: var(--steam-dark-blue);
+}
+
+.card-header {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--steam-dark-blue);
+}
+
+.btn-steam {
+  background-color: var(--steam-light-blue);
+  border-color: var(--steam-light-blue);
+  color: var(--steam-darker-blue);
+}
+
+.btn-steam:hover {
+  background-color: var(--steam-highlight-blue);
+  border-color: var(--steam-highlight-blue);
+  color: white;
+}
+
+.form-control {
+  background-color: var(--steam-input-bg);
+  border-color: var(--steam-dark-blue);
+  color: var(--steam-text);
+}
+
+.form-control:focus {
+  background-color: var(--steam-input-bg);
+  color: var(--steam-text);
+  border-color: var(--steam-light-blue);
+  box-shadow: 0 0 0 0.25rem rgba(102, 192, 244, 0.25);
+}
+
+.alert-success {
+  background-color: var(--steam-success);
+  color: white;
+  border-color: #4a6c01;
+}
+
+.alert-danger {
+  background-color: var(--steam-error);
+  color: white;
+  border-color: #a83232;
+}
+
+.text-steam {
+  color: var(--steam-light-blue);
+}
+
+.nav-link {
+  color: var(--steam-text);
+}
+
+.nav-link:hover {
+  color: var(--steam-light-blue);
+}
+
+.input-group-text {
+  background-color: var(--steam-darker-blue);
+  border-color: var(--steam-dark-blue);
+  color: var(--steam-text);
+}
+
+/* Game card styles */
+.game-card {
+  transition: transform 0.2s;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.game-price {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.game-discount {
+  background-color: var(--steam-success);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* Footer */
+.footer {
+  background-color: var(--steam-darker-blue);
+  color: var(--steam-text);
+  padding: 2rem 0;
+  margin-top: 3rem;
+}

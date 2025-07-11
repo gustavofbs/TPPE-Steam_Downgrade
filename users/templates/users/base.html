@@ -6,79 +6,68 @@
     <title>{% block title %}SteamRF{% endblock %}</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #1b2838;
-            color: #c7d5e0;
-        }
-        .navbar {
-            background-color: #171a21;
-        }
-        .card {
-            background-color: #2a475e;
-            border-color: #1b2838;
-        }
-        .btn-primary {
-            background-color: #66c0f4;
-            border-color: #66c0f4;
-            color: #171a21;
-        }
-        .btn-primary:hover {
-            background-color: #1b9ae4;
-            border-color: #1b9ae4;
-        }
-        .alert-success {
-            background-color: #5c7e10;
-            color: white;
-            border-color: #4a6c01;
-        }
-        .form-control {
-            background-color: #316282;
-            border-color: #1b2838;
-            color: #c7d5e0;
-        }
-        .form-control:focus {
-            background-color: #316282;
-            color: #c7d5e0;
-        }
-    </style>
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- CSS personalizado -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/steam-theme.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark mb-4">
         <div class="container">
-            <a class="navbar-brand" href="#">SteamRF</a>
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-gamepad me-2"></i>SteamRF
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Início</a>
+                        <a class="nav-link" href="/"><i class="fas fa-home me-1"></i> Início</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Loja</a>
+                        <a class="nav-link" href="#"><i class="fas fa-store me-1"></i> Loja</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Biblioteca</a>
+                        <a class="nav-link" href="#"><i class="fas fa-book me-1"></i> Biblioteca</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-heart me-1"></i> Lista de Desejos</a>
                     </li>
                 </ul>
+                <form class="d-flex me-3">
+                    <div class="input-group">
+                        <input class="form-control" type="search" placeholder="Buscar jogos..." aria-label="Search">
+                        <button class="btn btn-steam" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'users:profile' %}">Perfil</a>
-                        </li>
-                        <li class="nav-item">
-                            <form method="post" action="{% url 'users:logout' %}" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="nav-link btn btn-link">Sair</button>
-                            </form>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-1"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{% url 'users:profile' %}"><i class="fas fa-id-card me-2"></i>Perfil</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-shopping-cart me-2"></i>Compras</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Configurações</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" action="{% url 'users:logout' %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>Sair</button>
+                                    </form>
+                                </li>
+                            </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'users:login' %}">Entrar</a>
+                            <a class="nav-link btn btn-steam btn-sm me-2" href="{% url 'users:login' %}"><i class="fas fa-sign-in-alt me-1"></i> Entrar</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'users:register' %}">Registrar</a>
+                            <a class="nav-link" href="{% url 'users:register' %}"><i class="fas fa-user-plus me-1"></i> Registrar</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -90,6 +79,15 @@
         {% if messages %}
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {% if message.tags == 'success' %}
+                        <i class="fas fa-check-circle me-2"></i>
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                    {% elif message.tags == 'warning' %}
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                    {% elif message.tags == 'info' %}
+                        <i class="fas fa-info-circle me-2"></i>
+                    {% endif %}
                     {{ message }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
@@ -99,7 +97,43 @@
         {% block content %}{% endblock %}
     </div>
 
+    <footer class="footer mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-gamepad me-2"></i>SteamRF</h5>
+                    <p>Plataforma de jogos digitais com foco em funcionalidades de downgrade de jogos.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Links Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-steam"><i class="fas fa-angle-right me-2"></i>Sobre nós</a></li>
+                        <li><a href="#" class="text-steam"><i class="fas fa-angle-right me-2"></i>Termos de uso</a></li>
+                        <li><a href="#" class="text-steam"><i class="fas fa-angle-right me-2"></i>Política de privacidade</a></li>
+                        <li><a href="#" class="text-steam"><i class="fas fa-angle-right me-2"></i>Contato</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Conecte-se</h5>
+                    <div class="d-flex gap-3 fs-4">
+                        <a href="#" class="text-steam"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-steam"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-steam"><i class="fab fa-discord"></i></a>
+                        <a href="#" class="text-steam"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="mt-4">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0">&copy; 2025 SteamRF. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
