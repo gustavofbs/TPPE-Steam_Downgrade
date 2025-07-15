@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 # Importações para a documentação da API
 from drf_spectacular.views import (
@@ -48,6 +49,10 @@ urlpatterns = [
         path('purchases/', include('purchases.api.urls')),
         path('social/', include('social.api.urls')),
     ])),
+
+    
+    path('api/v1/auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/v1/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
     # API auth
     path('api-auth/', include('rest_framework.urls')),
