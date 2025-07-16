@@ -66,7 +66,7 @@ export class AuthService {
       const data = await response.json();
       
       // Armazenar token e dados do usuário
-      this.setToken(data.token);
+      this.setToken(data.access);
       this.setUserData(data.user);
       
       return data;
