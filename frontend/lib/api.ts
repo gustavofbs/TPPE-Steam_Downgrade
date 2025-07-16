@@ -120,7 +120,7 @@ export const gamesAPI = {
   // Get all games with optional filters
   getGames: async (params: Record<string, string> = {}) => {
     const queryParams = new URLSearchParams(params).toString();
-    return fetchAPI(`/games/${queryParams ? `?${queryParams}` : ''}`);
+    return fetchAPI(`/games/games${queryParams ? `?${queryParams}` : ''}`);
   },
   
   // Get a single game by ID
@@ -131,6 +131,32 @@ export const gamesAPI = {
   // Get game versions (for downgrade functionality)
   getGameVersions: async (gameId: string) => {
     return fetchAPI(`/games/${gameId}/versions/`);
+  },
+
+  // Get all available genres
+  getGenres: async () => {
+    return fetchAPI('/games/genres/');
+  },
+
+  // Get all available developers
+  getDevelopers: async () => {
+    return fetchAPI('/games/developers/');
+  },
+
+  // Add game to wishlist
+  addToWishlist: async (gameId: string) => {
+    return fetchAPI(`/wishlist/add/`, {
+      method: 'POST',
+      body: JSON.stringify({ game_id: gameId }),
+    });
+  },
+
+  // Purchase a game (add to library)
+  purchaseGame: async (gameId: string) => {
+    return fetchAPI(`/library/purchase/`, {
+      method: 'POST',
+      body: JSON.stringify({ game_id: gameId }),
+    });
   }
 };
 

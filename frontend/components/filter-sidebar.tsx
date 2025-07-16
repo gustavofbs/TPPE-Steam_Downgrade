@@ -18,14 +18,21 @@ interface Filters {
 
 interface FilterSidebarProps {
   filters: Filters
+  availableGenres?: string[]
+  availableDevelopers?: string[]
   onFilterChange: (key: keyof Filters, value: any) => void
   onClearFilters: () => void
 }
 
-const availableGenres = ["Ação", "Aventura", "RPG", "Estratégia", "Simulação", "Puzzle", "Esporte", "Cooperativo"]
-const availableDevelopers = ["Valve", "CD Projekt Red", "Ubisoft", "Rockstar Games", "EA Sports"]
+// Gêneros e desenvolvedores agora são fornecidos como props
 
-export function FilterSidebar({ filters, onFilterChange, onClearFilters }: FilterSidebarProps) {
+export function FilterSidebar({ 
+  filters, 
+  availableGenres = ["Ação", "Aventura", "RPG", "Estratégia", "Simulação", "Puzzle", "Esporte", "Cooperativo"], 
+  availableDevelopers = ["Valve", "CD Projekt Red", "Ubisoft", "Rockstar Games", "EA Sports"], 
+  onFilterChange, 
+  onClearFilters 
+}: FilterSidebarProps) {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",

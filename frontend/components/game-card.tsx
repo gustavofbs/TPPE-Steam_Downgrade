@@ -1,20 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Info, Heart } from "lucide-react"
+import { Info, Heart, ShoppingCart } from "lucide-react"
 import Image from "next/image"
-
-interface Game {
-  id: number
-  title: string
-  price: number
-  originalPrice: number | null
-  discount: number
-  image: string
-  genre: string[]
-  developer: string
-  onSale: boolean
-}
+import { Game } from "@/lib/catalog-service"
+import { useCatalog } from "@/lib/catalog-context"
+import { useState } from "react"
+import Link from "next/link"
 
 interface GameCardProps {
   game: Game
@@ -22,6 +14,9 @@ interface GameCardProps {
 }
 
 export function GameCard({ game, viewMode }: GameCardProps) {
+  const { addToWishlist, purchaseGame } = useCatalog();
+  const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
+  const [isPurchasing, setIsPurchasing] = useState(false);
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
@@ -73,12 +68,43 @@ export function GameCard({ game, viewMode }: GameCardProps) {
                     size="sm"
                     variant="outline"
                     className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
+                    onClick={async () => {
+                      try {
+                        setIsAddingToWishlist(true);
+                        await addToWishlist(game.id);
+                      } catch (error) {
+                        console.error('Erro ao adicionar à lista de desejos:', error);
+                      } finally {
+                        setIsAddingToWishlist(false);
+                      }
+                    }}
+                    disabled={isAddingToWishlist}
                   >
                     <Heart className="h-4 w-4" />
                   </Button>
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                    <Info className="h-4 w-4 mr-1" />
-                    Detalhes
+                  <Link href={`/catalog/${game.id}`}>
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                      <Info className="h-4 w-4 mr-1" />
+                      Detalhes
+                    </Button>
+                  </Link>
+                  <Button
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700"
+                    onClick={async () => {
+                      try {
+                        setIsPurchasing(true);
+                        await purchaseGame(game.id);
+                      } catch (error) {
+                        console.error('Erro ao comprar jogo:', error);
+                      } finally {
+                        setIsPurchasing(false);
+                      }
+                    }}
+                    disabled={isPurchasing}
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-1" />
+                    Comprar
                   </Button>
                 </div>
               </div>
@@ -109,18 +135,9 @@ export function GameCard({ game, viewMode }: GameCardProps) {
         <h3 className="text-lg font-semibold text-white mb-2 truncate group-hover:text-blue-300 transition-colors">
           {game.title}
         </h3>
-
         <p className="text-sm text-slate-400 mb-2">{game.developer}</p>
 
-        <div className="flex gap-1 flex-wrap mb-3">
-          {game.genre.slice(0, 2).map((g) => (
-            <Badge key={g} variant="secondary" className="text-xs bg-slate-700 text-slate-300">
-              {g}
-            </Badge>
-          ))}
-        </div>
-
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-end">
           <div>
             {game.originalPrice && (
               <span className="text-sm text-slate-500 line-through block">{formatPrice(game.originalPrice)}</span>
@@ -135,12 +152,25 @@ export function GameCard({ game, viewMode }: GameCardProps) {
               size="sm"
               variant="outline"
               className="border-slate-600 text-slate-300 hover:bg-slate-700 bg-transparent"
+              onClick={async () => {
+                try {
+                  setIsAddingToWishlist(true);
+                  await addToWishlist(game.id);
+                } catch (error) {
+                  console.error('Erro ao adicionar à lista de desejos:', error);
+                } finally {
+                  setIsAddingToWishlist(false);
+                }
+              }}
+              disabled={isAddingToWishlist}
             >
               <Heart className="h-4 w-4" />
             </Button>
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-              <Info className="h-4 w-4" />
-            </Button>
+            <Link href={`/catalog/${game.id}`}>
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                Detalhes
+              </Button>
+            </Link>
           </div>
         </div>
       </CardContent>

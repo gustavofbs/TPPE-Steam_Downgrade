@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,196 +16,48 @@ import {
 } from "@/components/ui/breadcrumb"
 import { GameCard } from "@/components/game-card"
 import { FilterSidebar } from "@/components/filter-sidebar"
-import { Gamepad2, Filter, Search, Grid3X3, List } from "lucide-react"
+import { Gamepad2, Filter, Search, Grid3X3, List, Loader2 } from "lucide-react"
+import { CatalogProvider, useCatalog } from "@/lib/catalog-context"
+import { GameFilters } from "@/lib/catalog-service"
 
-// Mock data for games
-const mockGames = [
-  {
-    id: 1,
-    title: "Half-Life 3",
-    price: 99.95,
-    originalPrice: 199.9,
-    discount: 50,
-    image: "/placeholder.svg?height=200&width=300",
-    genre: ["Ação", "Aventura"],
-    developer: "Valve",
-    onSale: true,
-  },
-  {
-    id: 2,
-    title: "Portal 3",
-    price: 129.9,
-    originalPrice: null,
-    discount: 0,
-    image: "/placeholder.svg?height=200&width=300",
-    genre: ["Puzzle", "Aventura"],
-    developer: "Valve",
-    onSale: false,
-  },
-  {
-    id: 3,
-    title: "Left 4 Dead 3",
-    price: 39.97,
-    originalPrice: 159.9,
-    discount: 75,
-    image: "/placeholder.svg?height=200&width=300",
-    genre: ["Ação", "Cooperativo"],
-    developer: "Valve",
-    onSale: true,
-  },
-  {
-    id: 4,
-    title: "The Witcher 4",
-    price: 249.9,
-    originalPrice: null,
-    discount: 0,
-    image: "/placeholder.svg?height=200&width=300",
-    genre: ["RPG", "Aventura"],
-    developer: "CD Projekt Red",
-    onSale: false,
-  },
-  {
-    id: 5,
-    title: "Cyberpunk 2078",
-    price: 209.93,
-    originalPrice: 299.9,
-    discount: 30,
-    image: "/placeholder.svg?height=200&width=300",
-    genre: ["RPG", "Ação"],
-    developer: "CD Projekt Red",
-    onSale: true,
-  },
-  {
-    id: 6,
-    title: "GTA VI",
-    price: 349.9,
-    originalPrice: null,
-    discount: 0,
-    image: "/placeholder.svg?height=200&width=300",
-    genre: ["Ação", "Aventura"],
-    developer: "Rockstar Games",
-    onSale: false,
-  },
-  {
-    id: 7,
-    title: "Assassin's Creed: Future",
-    price: 179.9,
-    originalPrice: null,
-    discount: 0,
-    image: "/placeholder.svg?height=200&width=300",
-    genre: ["Ação", "Aventura"],
-    developer: "Ubisoft",
-    onSale: false,
-  },
-  {
-    id: 8,
-    title: "FIFA 2025",
-    price: 89.95,
-    originalPrice: 179.9,
-    discount: 50,
-    image: "/placeholder.svg?height=200&width=300",
-    genre: ["Esporte", "Simulação"],
-    developer: "EA Sports",
-    onSale: true,
-  },
-]
+function CatalogPageContent() {
+  const {
+    games,
+    isLoading,
+    error,
+    genres,
+    developers,
+    filters,
+    totalItems,
+    totalPages,
+    currentPage,
+    updateFilters,
+    setPage,
+    clearFilters
+  } = useCatalog();
 
-interface Filters {
-  genres: string[]
-  developers: string[]
-  maxPrice: number
-  onSale: boolean
-  search: string
-}
+  console.log("DEBUG pagination:");
+  console.log("games.length:", games?.length);
+  console.log("currentPage:", currentPage);
+  console.log("filters.pageSize:", filters.pageSize);
+  console.log("totalItems:", totalItems);
+  console.log("Math.min calculation:", currentPage * (Number(filters.pageSize) || 12));
 
-export default function CatalogPage() {
-  const [filters, setFilters] = useState<Filters>({
-    genres: [],
-    developers: [],
-    maxPrice: 400,
-    onSale: false,
-    search: "",
-  })
-
-  const [sortBy, setSortBy] = useState("relevance")
-  const [itemsPerPage, setItemsPerPage] = useState(12)
-  const [currentPage, setCurrentPage] = useState(1)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [showFilters, setShowFilters] = useState(true)
 
-  // Filter and sort games
-  const filteredGames = useMemo(() => {
-    const filtered = mockGames.filter((game) => {
-      // Search filter
-      if (filters.search && !game.title.toLowerCase().includes(filters.search.toLowerCase())) {
-        return false
-      }
+  // Manipuladores de eventos
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    updateFilters({ search: e.target.value });
+  };
 
-      // Genre filter
-      if (filters.genres.length > 0 && !filters.genres.some((genre) => game.genre.includes(genre))) {
-        return false
-      }
+  const handleSortChange = (value: string) => {
+    updateFilters({ sortBy: value });
+  };
 
-      // Developer filter
-      if (filters.developers.length > 0 && !filters.developers.includes(game.developer)) {
-        return false
-      }
-
-      // Price filter
-      if (game.price > filters.maxPrice) {
-        return false
-      }
-
-      // On sale filter
-      if (filters.onSale && !game.onSale) {
-        return false
-      }
-
-      return true
-    })
-
-    // Sort games
-    switch (sortBy) {
-      case "price-low":
-        filtered.sort((a, b) => a.price - b.price)
-        break
-      case "price-high":
-        filtered.sort((a, b) => b.price - a.price)
-        break
-      case "name":
-        filtered.sort((a, b) => a.title.localeCompare(b.title))
-        break
-      case "discount":
-        filtered.sort((a, b) => b.discount - a.discount)
-        break
-      default:
-        // Keep original order for relevance
-        break
-    }
-
-    return filtered
-  }, [filters, sortBy])
-
-  // Pagination
-  const totalPages = Math.ceil(filteredGames.length / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const paginatedGames = filteredGames.slice(startIndex, startIndex + itemsPerPage)
-
-  const updateFilter = (key: keyof Filters, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value }))
-    setCurrentPage(1) // Reset to first page when filtering
-  }
-
-  const clearFilters = () => {
-    setFilters({
-      genres: [],
-      developers: [],
-      maxPrice: 400,
-      onSale: false,
-      search: "",
-    })
-    setCurrentPage(1)
-  }
+  const handleItemsPerPageChange = (value: string) => {
+    updateFilters({ pageSize: Number(value) });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
@@ -240,8 +92,8 @@ export default function CatalogPage() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
                 <Input
                   placeholder="Buscar jogos..."
-                  value={filters.search}
-                  onChange={(e) => updateFilter("search", e.target.value)}
+                  value={filters.search || ""}
+                  onChange={handleSearchChange}
                   className="pl-10 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
                 />
               </div>
@@ -261,7 +113,19 @@ export default function CatalogPage() {
           {/* Sidebar Filters */}
           {showFilters && (
             <div className="w-80 flex-shrink-0">
-              <FilterSidebar filters={filters} onFilterChange={updateFilter} onClearFilters={clearFilters} />
+              <FilterSidebar 
+                filters={{
+                  genres: filters.genres || [],
+                  developers: filters.developers || [],
+                  maxPrice: filters.maxPrice || 400,
+                  onSale: filters.onSale || false,
+                  search: filters.search || ""
+                }} 
+                availableGenres={genres}
+                availableDevelopers={developers}
+                onFilterChange={(key, value) => updateFilters({ [key]: value })} 
+                onClearFilters={clearFilters} 
+              />
             </div>
           )}
 
@@ -274,7 +138,7 @@ export default function CatalogPage() {
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <Label className="text-slate-300">Ordenar:</Label>
-                      <Select value={sortBy} onValueChange={setSortBy}>
+                      <Select value={filters.sortBy || "relevance"} onValueChange={handleSortChange}>
                         <SelectTrigger className="w-48 bg-slate-700 border-slate-600 text-white">
                           <SelectValue />
                         </SelectTrigger>
@@ -290,7 +154,10 @@ export default function CatalogPage() {
 
                     <div className="flex items-center gap-2">
                       <Label className="text-slate-300">Exibir:</Label>
-                      <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
+                      <Select 
+                        value={(filters.pageSize || 12).toString()} 
+                        onValueChange={handleItemsPerPageChange}
+                      >
                         <SelectTrigger className="w-20 bg-slate-700 border-slate-600 text-white">
                           <SelectValue />
                         </SelectTrigger>
@@ -325,24 +192,46 @@ export default function CatalogPage() {
               </CardContent>
             </Card>
 
+            {/* Loading State */}
+            {isLoading && (
+              <div className="flex justify-center items-center py-20">
+                <Loader2 className="h-10 w-10 text-blue-400 animate-spin" />
+                <span className="ml-3 text-slate-300">Carregando jogos...</span>
+              </div>
+            )}
+
+            {/* Error State */}
+            {error && !isLoading && (
+              <Card className="bg-red-900/30 border-red-800 mb-6">
+                <CardContent className="p-6 text-center">
+                  <p className="text-red-300 mb-4">{error}</p>
+                  <Button onClick={clearFilters} className="bg-blue-600 hover:bg-blue-700">
+                    Tentar Novamente
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Results Info */}
-            <div className="mb-4 text-slate-300">
-              Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredGames.length)} de{" "}
-              {filteredGames.length} jogos
-            </div>
+            {!isLoading && !error && (
+              <div className="mb-4 text-slate-300">
+                Mostrando {games.length > 0 ? ((currentPage - 1) * (Number(filters.pageSize) || 12) + 1) : 0}-
+                {Math.min(currentPage * (Number(filters.pageSize) || 12), totalItems)} de {totalItems} jogos
+              </div>
+            )}
 
             {/* Games Grid */}
-            {paginatedGames.length > 0 ? (
+            {!isLoading && !error && games.length > 0 ? (
               <div
                 className={`grid gap-6 mb-8 ${
                   viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
                 }`}
               >
-                {paginatedGames.map((game) => (
+                {games.map((game) => (
                   <GameCard key={game.id} game={game} viewMode={viewMode} />
                 ))}
               </div>
-            ) : (
+            ) : !isLoading && !error ? (
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardContent className="p-8 text-center">
                   <p className="text-slate-400 text-lg">Nenhum jogo encontrado com os filtros aplicados.</p>
@@ -351,38 +240,52 @@ export default function CatalogPage() {
                   </Button>
                 </CardContent>
               </Card>
-            )}
+            ) : null}
 
             {/* Pagination */}
-            {totalPages > 1 && (
+            {!isLoading && !error && totalPages > 1 && (
               <div className="flex justify-center">
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
                     disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(currentPage - 1)}
+                    onClick={() => setPage(currentPage - 1)}
                     className="border-slate-600 text-slate-300 hover:bg-slate-700"
                   >
                     Anterior
                   </Button>
 
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      onClick={() => setCurrentPage(page)}
-                      className={`border-slate-600 ${
-                        currentPage === page ? "bg-blue-600 hover:bg-blue-700" : "text-slate-300 hover:bg-slate-700"
-                      }`}
-                    >
-                      {page}
-                    </Button>
-                  ))}
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    // Mostrar no máximo 5 páginas
+                    let pageToShow;
+                    if (totalPages <= 5) {
+                      pageToShow = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageToShow = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageToShow = totalPages - 4 + i;
+                    } else {
+                      pageToShow = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <Button
+                        key={pageToShow}
+                        variant={currentPage === pageToShow ? "default" : "outline"}
+                        onClick={() => setPage(pageToShow)}
+                        className={`border-slate-600 ${
+                          currentPage === pageToShow ? "bg-blue-600 hover:bg-blue-700" : "text-slate-300 hover:bg-slate-700"
+                        }`}
+                      >
+                        {pageToShow}
+                      </Button>
+                    );
+                  })}
 
                   <Button
                     variant="outline"
                     disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(currentPage + 1)}
+                    onClick={() => setPage(currentPage + 1)}
                     className="border-slate-600 text-slate-300 hover:bg-slate-700"
                   >
                     Próximo
@@ -395,4 +298,13 @@ export default function CatalogPage() {
       </div>
     </div>
   )
+}
+
+// Componente principal que envolve o conteúdo com o provider
+export default function CatalogPage() {
+  return (
+    <CatalogProvider>
+      <CatalogPageContent />
+    </CatalogProvider>
+  );
 }
