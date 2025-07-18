@@ -27,8 +27,8 @@ export interface GameVersion {
 }
 
 export interface GameFilters {
-  genres?: string[];
-  developers?: string[];
+  genres?: number[];
+  developers?: number[];
   maxPrice?: number;
   minPrice?: number;
   onSale?: boolean;
