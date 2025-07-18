@@ -36,13 +36,6 @@ function CatalogPageContent() {
     clearFilters
   } = useCatalog();
 
-  console.log("DEBUG pagination:");
-  console.log("games.length:", games?.length);
-  console.log("currentPage:", currentPage);
-  console.log("filters.pageSize:", filters.pageSize);
-  console.log("totalItems:", totalItems);
-  console.log("Math.min calculation:", currentPage * (Number(filters.pageSize) || 12));
-
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [showFilters, setShowFilters] = useState(true)
 
@@ -215,8 +208,8 @@ function CatalogPageContent() {
             {/* Results Info */}
             {!isLoading && !error && (
               <div className="mb-4 text-slate-300">
-                Mostrando {games.length > 0 ? ((currentPage - 1) * (Number(filters.pageSize) || 12) + 1) : 0}-
-                {Math.min(currentPage * (Number(filters.pageSize) || 12), totalItems)} de {totalItems} jogos
+                Mostrando {games.length > 0 ? ((currentPage - 1) * (filters.pageSize || 12) + 1) : 0}-
+                {Math.min(currentPage * (filters.pageSize || 12), totalItems)} de {totalItems} jogos
               </div>
             )}
 

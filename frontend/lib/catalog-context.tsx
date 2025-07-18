@@ -7,8 +7,8 @@ interface CatalogContextType {
   games: Game[];
   isLoading: boolean;
   error: string | null;
-  genres: string[];
-  developers: string[];
+  genres: { id: number, name: string }[];
+  developers: { id: number, name: string }[];
   filters: GameFilters;
   totalItems: number;
   totalPages: number;
@@ -35,15 +35,15 @@ export function useCatalog() {
 // Provider component
 export function CatalogProvider({ children }: { children: ReactNode }) {
   const [games, setGames] = useState<Game[]>([]);
-  const [genres, setGenres] = useState<string[]>([]);
-  const [developers, setDevelopers] = useState<string[]>([]);
+  const [genres, setGenres] = useState<{ id: number, name: string }[]>([]);
+  const [developers, setDevelopers] = useState<{ id: number, name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [filters, setFilters] = useState<GameFilters>({
-    genres: [],
-    developers: [],
+    genres: [], // agora number[]
+    developers: [], // agora number[]
     maxPrice: 400,
     minPrice: 0,
     onSale: false,
@@ -65,9 +65,8 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
           catalogService.getDevelopers()
         ]);
         
-        // Garante que sejam arrays
-        setGenres(Array.isArray(genresData) ? genresData : []);
-        setDevelopers(Array.isArray(developersData) ? developersData : []);
+        setGenres(genresData);
+        setDevelopers(developersData);
       } catch (err: any) {
         console.error('Erro ao carregar dados iniciais:', err);
         setError(err.message || 'Erro ao carregar dados iniciais');
@@ -85,8 +84,7 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
       
       try {
         const response: CatalogResponse = await catalogService.getGames(filters);
-        console.log("CATALOG RESPONSE:", response);
-        setGames(Array.isArray(response.results) ? response.results : []);
+        setGames(response.results);
         setTotalItems(response.count);
         setTotalPages(Math.ceil(response.count / (filters.pageSize || 12)));
       } catch (err: any) {
@@ -156,7 +154,7 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
     filters,
     totalItems,
     totalPages,
-    currentPage: Number(filters.page) || 1,
+    currentPage: filters.page || 1,
     updateFilters,
     setPage,
     clearFilters,

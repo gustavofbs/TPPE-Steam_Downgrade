@@ -73,7 +73,25 @@ export class CatalogService {
       if (filters.page) params.page = filters.page.toString();
       if (filters.pageSize) params.page_size = filters.pageSize.toString();
       
-      return await gamesAPI.getGames(params);
+      const apiResponse = await gamesAPI.getGames(params);
+      const mappedResults = apiResponse.results.map((g: any) => ({
+        id: g.id,
+        title: g.title,
+        price: Number(g.discount_price ?? g.base_price),
+        originalPrice: g.discount_percent > 0 ? Number(g.base_price) : null,
+        discount: Number(g.discount_percent) || 0,
+        image: g.cover_image,
+        genre: Array.isArray(g.genres) ? g.genres : [],
+        developer: g.developer_name || "",
+        publisher: g.publisher_name || "",
+        releaseDate: g.release_date,
+        description: g.short_description,
+        onSale: !!g.is_on_sale,
+      }));
+      return {
+        ...apiResponse,
+        results: mappedResults,
+      };
     } catch (error) {
       console.error('Erro ao obter jogos:', error);
       throw error;
@@ -101,22 +119,23 @@ export class CatalogService {
   }
 
   // Obter gêneros disponíveis
-  async getGenres(): Promise<string[]> {
+  async getGenres(): Promise<{ id: number, name: string }[]> {
     try {
-      return await gamesAPI.getGenres();
+      const genresData = await gamesAPI.getGenres();
+      return genresData.results ? genresData.results.map((genre: any) => ({ id: genre.id, name: genre.name })) : [];
     } catch (error) {
       console.error('Erro ao obter gêneros:', error);
-      return []; // Retorna array vazio em caso de erro
+      return [];
     }
   }
 
-  // Obter desenvolvedores disponíveis
-  async getDevelopers(): Promise<string[]> {
+  async getDevelopers(): Promise<{ id: number, name: string }[]> {
     try {
-      return await gamesAPI.getDevelopers();
+      const developersData = await gamesAPI.getDevelopers();
+      return developersData.results ? developersData.results.map((dev: any) => ({ id: dev.id, name: dev.name })) : [];
     } catch (error) {
       console.error('Erro ao obter desenvolvedores:', error);
-      return []; // Retorna array vazio em caso de erro
+      return [];
     }
   }
 

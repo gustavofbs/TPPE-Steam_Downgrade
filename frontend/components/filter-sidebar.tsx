@@ -9,27 +9,32 @@ import { Badge } from "@/components/ui/badge"
 import { Filter, X } from "lucide-react"
 
 interface Filters {
-  genres: string[]
-  developers: string[]
-  maxPrice: number
-  onSale: boolean
-  search: string
+  genres: number[];
+  developers: number[];
+  maxPrice: number;
+  onSale: boolean;
+  search: string;
+}
+
+interface GenreOrDev {
+  id: number;
+  name: string;
 }
 
 interface FilterSidebarProps {
-  filters: Filters
-  availableGenres?: string[]
-  availableDevelopers?: string[]
-  onFilterChange: (key: keyof Filters, value: any) => void
-  onClearFilters: () => void
+  filters: Filters;
+  availableGenres?: GenreOrDev[];
+  availableDevelopers?: GenreOrDev[];
+  onFilterChange: (key: keyof Filters, value: any) => void;
+  onClearFilters: () => void;
 }
 
 // Gêneros e desenvolvedores agora são fornecidos como props
 
 export function FilterSidebar({ 
   filters, 
-  availableGenres = ["Ação", "Aventura", "RPG", "Estratégia", "Simulação", "Puzzle", "Esporte", "Cooperativo"], 
-  availableDevelopers = ["Valve", "CD Projekt Red", "Ubisoft", "Rockstar Games", "EA Sports"], 
+  availableGenres = [], 
+  availableDevelopers = [], 
   onFilterChange, 
   onClearFilters 
 }: FilterSidebarProps) {
@@ -40,16 +45,18 @@ export function FilterSidebar({
     }).format(price)
   }
 
-  const handleGenreChange = (genre: string, checked: boolean) => {
-    const newGenres = checked ? [...filters.genres, genre] : filters.genres.filter((g) => g !== genre)
-    onFilterChange("genres", newGenres)
-  }
+  const handleGenreChange = (genreId: number, checked: boolean) => {
+    const newGenres = checked
+      ? [...filters.genres, genreId]
+      : filters.genres.filter((g) => g !== genreId);
+    onFilterChange("genres", newGenres);
+  };
 
-  const handleDeveloperChange = (developer: string, checked: boolean) => {
+  const handleDeveloperChange = (devId: number, checked: boolean) => {
     const newDevelopers = checked
-      ? [...filters.developers, developer]
-      : filters.developers.filter((d) => d !== developer)
-    onFilterChange("developers", newDevelopers)
+      ? [...filters.developers, devId]
+      : filters.developers.filter((d) => d !== devId);
+    onFilterChange("developers", newDevelopers);
   }
 
   const hasActiveFilters =
@@ -87,28 +94,34 @@ export function FilterSidebar({
           <div>
             <Label className="text-slate-300 text-sm font-medium">Filtros Ativos:</Label>
             <div className="flex flex-wrap gap-1 mt-2">
-              {filters.genres.map((genre) => (
-                <Badge key={genre} variant="secondary" className="bg-blue-600 text-white">
-                  {genre}
-                  <button
-                    onClick={() => handleGenreChange(genre, false)}
-                    className="ml-1 hover:bg-blue-700 rounded-full p-0.5"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
-              {filters.developers.map((dev) => (
-                <Badge key={dev} variant="secondary" className="bg-purple-600 text-white">
-                  {dev}
-                  <button
-                    onClick={() => handleDeveloperChange(dev, false)}
-                    className="ml-1 hover:bg-purple-700 rounded-full p-0.5"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              ))}
+              {filters.genres.map((genreId) => {
+                const genreObj = availableGenres.find(g => g.id === genreId);
+                return genreObj ? (
+                  <Badge key={genreId} variant="secondary" className="bg-blue-600 text-white">
+                    {genreObj.name}
+                    <button
+                      onClick={() => handleGenreChange(genreId, false)}
+                      className="ml-1 hover:bg-blue-700 rounded-full p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ) : null;
+              })} 
+              {filters.developers.map((devId) => {
+                const devObj = availableDevelopers.find(d => d.id === devId);
+                return devObj ? (
+                  <Badge key={devId} variant="secondary" className="bg-purple-600 text-white">
+                    {devObj.name}
+                    <button
+                      onClick={() => handleDeveloperChange(devId, false)}
+                      className="ml-1 hover:bg-purple-700 rounded-full p-0.5"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ) : null;
+              })} 
               {filters.onSale && (
                 <Badge variant="secondary" className="bg-green-600 text-white">
                   Em Promoção
@@ -129,15 +142,15 @@ export function FilterSidebar({
           <Label className="text-slate-300 text-sm font-medium mb-3 block">Gêneros</Label>
           <div className="space-y-2 max-h-40 overflow-y-auto">
             {availableGenres.map((genre) => (
-              <div key={genre} className="flex items-center space-x-2">
+              <div key={genre.id} className="flex items-center space-x-2">
                 <Checkbox
-                  id={`genre-${genre}`}
-                  checked={filters.genres.includes(genre)}
-                  onCheckedChange={(checked) => handleGenreChange(genre, checked as boolean)}
+                  id={`genre-${genre.id}`}
+                  checked={filters.genres.includes(genre.id)}
+                  onCheckedChange={(checked) => handleGenreChange(genre.id, checked as boolean)}
                   className="border-slate-600 data-[state=checked]:bg-blue-600"
                 />
-                <Label htmlFor={`genre-${genre}`} className="text-slate-300 text-sm cursor-pointer hover:text-white">
-                  {genre}
+                <Label htmlFor={`genre-${genre.id}`} className="text-slate-300 text-sm cursor-pointer hover:text-white">
+                  {genre.name}
                 </Label>
               </div>
             ))}
@@ -182,16 +195,16 @@ export function FilterSidebar({
         <div>
           <Label className="text-slate-300 text-sm font-medium mb-3 block">Desenvolvedores</Label>
           <div className="space-y-2 max-h-32 overflow-y-auto">
-            {availableDevelopers.map((developer) => (
-              <div key={developer} className="flex items-center space-x-2">
+            {availableDevelopers.map((dev) => (
+              <div key={dev.id} className="flex items-center space-x-2">
                 <Checkbox
-                  id={`dev-${developer}`}
-                  checked={filters.developers.includes(developer)}
-                  onCheckedChange={(checked) => handleDeveloperChange(developer, checked as boolean)}
+                  id={`dev-${dev.id}`}
+                  checked={filters.developers.includes(dev.id)}
+                  onCheckedChange={(checked) => handleDeveloperChange(dev.id, checked as boolean)}
                   className="border-slate-600 data-[state=checked]:bg-purple-600"
                 />
-                <Label htmlFor={`dev-${developer}`} className="text-slate-300 text-sm cursor-pointer hover:text-white">
-                  {developer}
+                <Label htmlFor={`dev-${dev.id}`} className="text-slate-300 text-sm cursor-pointer hover:text-white">
+                  {dev.name}
                 </Label>
               </div>
             ))}
