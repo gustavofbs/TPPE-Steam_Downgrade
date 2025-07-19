@@ -168,7 +168,7 @@ export function GameCard({ game, viewMode }: GameCardProps) {
             </Button>
             <Link href={`/games/${game.slug}`}>
               <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                Detalhes
+                <Info className="h-4 w-4" />
               </Button>
             </Link>
           </div>
