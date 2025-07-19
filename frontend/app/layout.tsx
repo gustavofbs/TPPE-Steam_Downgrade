@@ -8,6 +8,7 @@ import { AlertSystem } from "@/components/alert-system"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/lib/auth-context"
 import { FriendsProvider } from "@/lib/friends-context"
+import { CartProvider } from "@/lib/cart-context"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -27,14 +28,16 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <AuthProvider>
-            <FriendsProvider>
-              <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex flex-col">
-                <Navbar />
-                <AlertSystem />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
-            </FriendsProvider>
+            <CartProvider>
+              <FriendsProvider>
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex flex-col">
+                  <Navbar />
+                  <AlertSystem />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </div>
+              </FriendsProvider>
+            </CartProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

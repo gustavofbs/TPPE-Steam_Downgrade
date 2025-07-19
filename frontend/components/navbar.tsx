@@ -5,6 +5,7 @@ import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
+import { useCart } from "@/lib/cart-context"
 import { GamesAPI, type Game } from "../lib/games-api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,6 +35,7 @@ import {
 
 export function Navbar() {
   const { user, logout } = useAuth()
+  const { cart } = useCart()
   const [searchQuery, setSearchQuery] = useState("")
   const [isOpen, setIsOpen] = useState(false)
   const [searchResults, setSearchResults] = useState<Game[]>([])
@@ -97,11 +99,20 @@ export function Navbar() {
     window.location.href = '/login'
   }
 
+  // Função utilitária para calcular itens do carrinho
+  const getCartItemCount = () => {
+    if (!cart || !cart.items || !Array.isArray(cart.items)) {
+      return 0;
+    }
+    return cart.items.reduce((total, item) => total + (item.quantity || 0), 0);
+  };
+
   const navItems = [
     { href: "/", label: "Início", icon: Home },
     { href: "/catalog", label: "Loja", icon: Store },
     { href: "/library", label: "Biblioteca", icon: Library },
     { href: "/wishlist", label: "Lista de Desejos", icon: Heart },
+    { href: "/cart", label: "Carrinho", icon: ShoppingCart },
   ]
 
   return (
@@ -118,14 +129,22 @@ export function Navbar() {
           <div className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => {
               const Icon = item.icon
+              const isCart = item.href === '/cart'
+              const cartItemCount = getCartItemCount()
+              
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center space-x-1 text-slate-300 hover:text-white transition-colors"
+                  className="flex items-center space-x-1 text-slate-300 hover:text-white transition-colors relative"
                 >
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
+                  {isCart && cartItemCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                      {cartItemCount > 99 ? '99+' : cartItemCount}
+                    </span>
+                  )}
                 </Link>
               )
             })}
@@ -288,15 +307,23 @@ export function Navbar() {
                 <div className="space-y-2">
                   {navItems.map((item) => {
                     const Icon = item.icon
+                    const isCart = item.href === '/cart'
+                    const cartItemCount = getCartItemCount()
+                    
                     return (
                       <Link
                         key={item.href}
                         href={item.href}
                         onClick={() => setIsOpen(false)}
-                        className="flex items-center space-x-3 p-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                        className="flex items-center space-x-3 p-3 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors relative"
                       >
                         <Icon className="h-5 w-5" />
                         <span>{item.label}</span>
+                        {isCart && cartItemCount > 0 && (
+                          <span className="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                            {cartItemCount > 99 ? '99+' : cartItemCount}
+                          </span>
+                        )}
                       </Link>
                     )
                   })}

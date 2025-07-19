@@ -5,6 +5,8 @@ import { Info, Heart, ShoppingCart, Star } from "lucide-react"
 import Image from "next/image"
 import { Game, GameListItem } from "@/lib/catalog-service"
 import { useCatalog } from "@/lib/catalog-context"
+import { useCart } from "@/lib/cart-context"
+import { useAuth } from "@/lib/auth-context"
 import { useState } from "react"
 import Link from "next/link"
 
@@ -15,8 +17,11 @@ interface GameCardProps {
 
 export function GameCard({ game, viewMode }: GameCardProps) {
   const { addToWishlist, purchaseGame } = useCatalog();
+  const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
@@ -43,6 +48,24 @@ export function GameCard({ game, viewMode }: GameCardProps) {
       </div>
     )
   }
+
+  const handleAddToCart = async () => {
+    if (!isAuthenticated) {
+      alert('Você precisa estar logado para adicionar itens ao carrinho.');
+      return;
+    }
+
+    setIsAddingToCart(true);
+    try {
+      await addToCart(Number(game.id));
+      // Opcional: mostrar toast de sucesso
+    } catch (error) {
+      console.error('Erro ao adicionar ao carrinho:', error);
+      alert('Erro ao adicionar ao carrinho. Tente novamente.');
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
 
   if (viewMode === "list") {
     return (
@@ -117,20 +140,15 @@ export function GameCard({ game, viewMode }: GameCardProps) {
                   <Button
                     size="sm"
                     className="bg-green-600 hover:bg-green-700"
-                    onClick={async () => {
-                      try {
-                        setIsPurchasing(true);
-                        await purchaseGame(game.id);
-                      } catch (error) {
-                        console.error('Erro ao comprar jogo:', error);
-                      } finally {
-                        setIsPurchasing(false);
-                      }
-                    }}
-                    disabled={isPurchasing}
+                    onClick={handleAddToCart}
+                    disabled={isAddingToCart}
                   >
-                    <ShoppingCart className="h-4 w-4 mr-1" />
-                    Comprar
+                    {isAddingToCart ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1" />
+                    ) : (
+                      <ShoppingCart className="h-4 w-4 mr-1" />
+                    )}
+                    {isAddingToCart ? 'Adicionando...' : 'Carrinho'}
                   </Button>
                 </div>
               </div>
@@ -181,6 +199,7 @@ export function GameCard({ game, viewMode }: GameCardProps) {
           </div>
 
           <div className="flex gap-2">
+            {/*
             <Button
               size="sm"
               variant="outline"
@@ -198,6 +217,19 @@ export function GameCard({ game, viewMode }: GameCardProps) {
               disabled={isAddingToWishlist}
             >
               <Heart className="h-4 w-4" />
+            </Button>
+            */}
+            <Button
+              size="sm"
+              className="bg-green-600 hover:bg-green-700"
+              onClick={handleAddToCart}
+              disabled={isAddingToCart}
+            >
+              {isAddingToCart ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+              ) : (
+                <ShoppingCart className="h-4 w-4" />
+              )}
             </Button>
             <Link href={`/games/${game.slug}`}>
               <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
