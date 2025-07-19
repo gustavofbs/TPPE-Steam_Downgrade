@@ -2,8 +2,10 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
+import { useAuth } from "@/lib/auth-context"
+import { GamesAPI, type Game } from "../lib/games-api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -30,25 +32,69 @@ import {
   Menu,
 } from "lucide-react"
 
-// Mock user data - replace with actual auth logic
-const mockUser = {
-  isAuthenticated: true,
-  username: "PlayerOne",
-}
-
 export function Navbar() {
+  const { user, logout } = useAuth()
   const [searchQuery, setSearchQuery] = useState("")
   const [isOpen, setIsOpen] = useState(false)
+  const [searchResults, setSearchResults] = useState<Game[]>([])
+  const [showResults, setShowResults] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+
+  // Debounce para busca
+  useEffect(() => {
+    const timeoutId = setTimeout(async () => {
+      if (searchQuery.trim().length >= 2) {
+        setIsSearching(true)
+        try {
+          const results = await GamesAPI.searchGames(searchQuery.trim(), 5)
+          setSearchResults(results || [])
+          setShowResults(true)
+        } catch (error) {
+          console.error('Erro na busca:', error)
+          setSearchResults([])
+        } finally {
+          setIsSearching(false)
+        }
+      } else {
+        setSearchResults([])
+        setShowResults(false)
+      }
+    }, 300)
+
+    return () => clearTimeout(timeoutId)
+  }, [searchQuery])
+
+  // Fechar resultados quando clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowResults(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    // Implement search logic
-    console.log("Searching for:", searchQuery)
+    if (searchQuery.trim()) {
+      // Redirecionar para página de busca com query
+      window.location.href = `/catalog?search=${encodeURIComponent(searchQuery.trim())}`
+    }
+  }
+
+  const handleGameSelect = (game: Game) => {
+    setShowResults(false)
+    setSearchQuery('')
+    // Redirecionar para página do jogo
+    window.location.href = `/games/${game.slug}`
   }
 
   const handleLogout = () => {
-    // Implement logout logic
-    console.log("Logging out...")
+    logout()
+    window.location.href = '/login'
   }
 
   const navItems = [
@@ -85,37 +131,95 @@ export function Navbar() {
             })}
           </div>
 
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="hidden md:flex items-center space-x-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
-              <Input
-                type="search"
-                placeholder="Buscar jogos..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-64 input-steam"
-              />
-            </div>
-            <Button type="submit" className="btn-steam">
+          {/* Search Bar with Autocomplete */}
+          <div className="hidden md:flex items-center space-x-2" ref={searchRef}>
+            <form onSubmit={handleSearch} className="relative">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4 z-10" />
+                <Input
+                  type="search"
+                  placeholder="Buscar jogos..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => searchResults?.length > 0 && setShowResults(true)}
+                  className="pl-10 w-64 input-steam"
+                  autoComplete="off"
+                />
+                
+                {/* Dropdown de resultados */}
+                {showResults && (searchResults?.length > 0 || isSearching) && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
+                    {isSearching ? (
+                      <div className="p-4 text-center text-slate-400">
+                        <div className="animate-spin inline-block w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full mr-2"></div>
+                        Buscando...
+                      </div>
+                    ) : (
+                      <>
+                        {searchResults?.map((game) => (
+                          <button
+                            key={game.id}
+                            onClick={() => handleGameSelect(game)}
+                            className="w-full p-3 text-left hover:bg-slate-700 transition-colors border-b border-slate-700 last:border-b-0 flex items-center space-x-3"
+                          >
+                            {game.cover_image && (
+                              <img
+                                src={game.cover_image}
+                                alt={game.title}
+                                className="w-10 h-10 object-cover rounded"
+                              />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <div className="text-white font-medium truncate">{game.title}</div>
+                              <div className="text-slate-400 text-sm truncate">{game.developer_name}</div>
+                              {game.is_on_sale ? (
+                                <div className="flex items-center space-x-2 mt-1">
+                                  <span className="text-slate-400 line-through text-xs">R$ {Number(game.base_price).toFixed(2)}</span>
+                                  <span className="text-green-400 text-sm font-medium">R$ {Number(game.discount_price).toFixed(2)}</span>
+                                </div>
+                              ) : (
+                                <div className="text-blue-400 text-sm mt-1">R$ {Number(game.base_price).toFixed(2)}</div>
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                        {searchResults?.length === 5 && (
+                          <div className="p-3 text-center border-t border-slate-700">
+                            <button
+                              onClick={() => handleSearch({ preventDefault: () => {} } as React.FormEvent)}
+                              className="text-blue-400 hover:text-blue-300 text-sm"
+                            >
+                              Ver todos os resultados
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            </form>
+            <Button onClick={() => handleSearch({ preventDefault: () => {} } as React.FormEvent)} className="btn-steam">
               <Search className="h-4 w-4" />
             </Button>
-          </form>
+          </div>
 
           {/* User Menu */}
           <div className="hidden md:flex items-center space-x-4">
-            {mockUser.isAuthenticated ? (
+            {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center space-x-2 text-slate-300 hover:text-white">
                     <User className="h-4 w-4" />
-                    <span>{mockUser.username}</span>
+                    <span>{user.username || user.first_name || 'Usuário'}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56 bg-slate-800 border-slate-700" align="end">
-                  <DropdownMenuItem className="text-slate-300 hover:text-white hover:bg-slate-700">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Perfil</span>
+                  <DropdownMenuItem className="text-slate-300 hover:text-white hover:bg-slate-700" asChild>
+                    <Link href="/profile">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Perfil</span>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-slate-300 hover:text-white hover:bg-slate-700">
                     <ShoppingCart className="mr-2 h-4 w-4" />
@@ -200,11 +304,11 @@ export function Navbar() {
 
                 {/* Mobile User Menu */}
                 <div className="border-t border-slate-700 pt-4">
-                  {mockUser.isAuthenticated ? (
+                  {user ? (
                     <div className="space-y-2">
                       <div className="flex items-center space-x-3 p-3 text-white">
                         <User className="h-5 w-5" />
-                        <span>{mockUser.username}</span>
+                        <span>{user.username || user.first_name || 'Usuário'}</span>
                       </div>
                       <Link
                         href="/profile"
