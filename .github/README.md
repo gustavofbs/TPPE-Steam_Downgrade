@@ -1,164 +1,162 @@
-# CI/CD Pipeline
+# 🎮 Steam-Downgrade
 
-Este diretório contém os workflows do GitHub Actions para o projeto Steam-Downgrade.
+**Plataforma de Jogos Digitais com Sistema de Downgrade**
 
-## 📋 Workflows Disponíveis
+> 📚 **Projeto Acadêmico** - Técnicas de Programação em Plataformas Emergentes (TPPE)  
+> 🔄 **Refatoração** do [projeto original em Java](https://github.com/leomitx10/Steam-Downgrade) para Python/Django + Next.js
 
-### 🔍 `lint.yml` - Verificação de Qualidade de Código
-**Objetivo**: Workflow simples focado apenas em lint e qualidade de código.
+---
 
-**Triggers**:
-- Push para branches: `main`, `develop`, `SteamRFv2`
-- Pull requests para: `main`, `develop`
+## 🚀 **Execução Rápida**
 
-**Jobs**:
-1. **Backend Lint** (`backend-lint`):
-   - ✅ Black (formatação de código)
-   - ✅ isort (ordenação de imports)
-   - ✅ Flake8 (guia de estilo)
-
-2. **Frontend Lint** (`frontend-lint`):
-   - ✅ ESLint (linting JavaScript/TypeScript)
-   - ✅ TypeScript type checking
-
-3. **Lint Summary** (`lint-summary`):
-   - ✅ Resumo dos resultados
-
-### 🚀 `ci.yml` - Pipeline Completo
-**Objetivo**: Pipeline completo com lint, testes, segurança e build.
-
-**Jobs**:
-1. **Backend Lint** - Qualidade de código Python
-2. **Frontend Lint** - Qualidade de código TypeScript/React
-3. **Backend Tests** - Testes automatizados com PostgreSQL
-4. **Security Check** - Verificação de vulnerabilidades
-5. **Docker Build** - Teste de build das imagens Docker
-
-## 🛠️ Configurações de Lint
-
-### Backend (Python)
-- **Black**: Formatação de código (linha 88 caracteres)
-- **isort**: Ordenação de imports
-- **Flake8**: Verificação de estilo
-- **Pylint**: Análise de qualidade de código
-
-### Frontend (TypeScript/React)
-- **ESLint**: Linting JavaScript/TypeScript
-- **TypeScript**: Verificação de tipos
-- **Next.js**: Build check
-
-## 📁 Arquivos de Configuração
-
-```
-├── .flake8              # Configuração do Flake8
-├── pyproject.toml       # Configuração Black, isort, Pylint
-├── frontend/
-│   ├── .eslintrc.json   # Configuração ESLint
-│   └── tsconfig.json    # Configuração TypeScript
-└── Makefile             # Comandos para desenvolvimento local
-```
-
-## 🚀 Executando Localmente
-
-### Usando Makefile
 ```bash
-# Instalar dependências
-make install
-
-# Executar todos os lints
-make lint
-
-# Executar apenas backend
-make lint-backend
-
-# Executar apenas frontend
-make lint-frontend
-
-# Formatar código automaticamente
-make format
+# Clonar e executar
+git clone <url-do-repositorio>
+cd TPPE-Steam_Downgrade
+docker-compose up --build
 ```
 
-### Comandos Manuais
+**🌐 Acesso:**
+- **Frontend:** http://localhost:3001
+- **Backend API:** http://localhost:8000
+- **Admin:** http://localhost:8000/admin
 
-**Backend**:
-```bash
-# Instalar dependências de lint
-pip install flake8 black isort
+---
 
-# Executar lints
-black --check .
-isort --check-only .
-flake8 .
+## 📊 **Funcionalidades Implementadas**
 
-# Formatar código
-black .
-isort .
+### ✅ **Sistema Completo de Autenticação**
+- Registro, login e perfis de usuário
+- Upload de avatar e edição de dados
+- Autenticação JWT segura
+
+### ✅ **Catálogo de Jogos Avançado**
+- Visualização com imagens, preços e promoções
+- Sistema de busca com autocomplete em tempo real
+- Páginas detalhadas com screenshots e informações
+
+### ✅ **Sistema de Reviews Completo**
+- Criar, editar e excluir avaliações
+- Sistema de votos (útil/não útil)
+- Cálculo automático de ratings e recomendações
+
+### 🚧 **Sistema de Compras**
+- Carrinho de compras funcional
+- Checkout com simulação de pagamento
+- Histórico de pedidos
+
+### ✅ **Painel Administrativo**
+- Gerenciamento completo de jogos
+- Upload de imagens e versões
+- Interface Django Admin customizada
+
+### 🚧 **Em Desenvolvimento**
+- Sistema de amizades (busca e solicitações)
+- Biblioteca pessoal de jogos
+- Lista de desejos
+- Filtros avançados no catálogo
+
+---
+
+## 📋 **Backlog Detalhado - Histórias de Usuário**
+
+### 1. **Gerenciamento de Usuários**
+- ✅ Criar conta na plataforma
+- ✅ Fazer login na conta
+- ✅ Editar perfil e upload de avatar
+- ⏳ Recuperar senha por email
+
+### 2. **Catálogo de Jogos**
+- ✅ Visualizar jogos disponíveis na loja
+- ✅ Visualizar detalhes de jogos específicos
+- ✅ Filtrar jogos por categoria, preço, classificação
+- ✅ Pesquisar jogos por nome (autocomplete implementado)
+
+### 3. **Sistema de Compras**
+- 🚧 Adicionar jogos ao carrinho
+- 🚧 Remover jogos do carrinho
+- 🚧 Finalizar compra (simulação)
+- 🚧 Visualizar histórico de compras
+- 🚧 Métodos de pagamento reais
+
+### 4. **Avaliações e Reviews** ⭐
+- ✅ Avaliar jogos possuídos
+- ✅ Visualizar avaliações de outros usuários
+- ✅ Votar em reviews (útil/não útil)
+- ✅ Editar e excluir próprias avaliações
+- 🚧 Sistema de recomendações baseado em preferências
+
+### 5. **Sistema de Amigos**
+- ✅ Adicionar outros usuários como amigos
+- 🚧 Visualizar jogos dos amigos
+- 🚧 Recomendar jogos para amigos
+- ⏳ Chat entre amigos
+
+### 6. **Biblioteca Pessoal**
+- ✅ Visualizar jogos possuídos
+- 🚧 Download de diferentes versões (downgrade)
+- ⏳ Desinstalar jogos
+- 🚧 Histórico de jogos recentes
+
+### 7. **Lista de Desejos**
+- 🚧 Adicionar jogos à lista de desejos
+- 🚧 Remover jogos da lista
+- ⏳ Notificações de promoções
+
+### 8. **Administração**
+- ✅ Adicionar novos jogos ao catálogo
+- ✅ Editar informações de jogos
+- ✅ Gerenciar versões de jogos
+- ✅ Remover jogos do catálogo
+- ✅ Gerenciar usuários
+
+**Legenda:** ✅ Implementado | 🚧 Em Desenvolvimento | ⏳ Pendente
+
+---
+
+## **Stack Tecnológica**
+
+**Backend:** Django 4.2 + DRF + PostgreSQL + JWT  
+**Frontend:** Next.js 14 + TypeScript + Tailwind CSS  
+**DevOps:** Docker + Docker Compose  
+
+---
+
+## **Arquitetura**
+
+```
+┌─────────────────┐    HTTP/JSON   ┌─────────────────┐
+│   FRONTEND      │◄──────────────►│    BACKEND      │
+│   (Next.js)     │                │   (Django)      │
+│                 │                │                 │
+│ • Componentes   │                │ • API REST      │
+│ • Contexts      │                │ • Models        │
+│ • Services      │                │ • ViewSets      │
+└─────────────────┘                └─────────────────┘
+                                            │
+                                            ▼
+                                   ┌─────────────────┐
+                                   │   PostgreSQL    │
+                                   │   (Database)    │
+                                   └─────────────────┘
 ```
 
-**Frontend**:
-```bash
-# Instalar dependências
-cd frontend && npm install
+**Padrões Utilizados:**
+- **Backend:** MV + Modular Apps + API-First
+- **Frontend:** Component-Based + Context Pattern
+- **Comunicação:** RESTful APIs
 
-# Executar lints
-npm run lint
-npm run type-check
+---
 
-# Formatar código
-npm run lint -- --fix
-```
+## 📋 **Pré-requisitos**
 
-## 🎯 Status Badges
+- Docker
+- Docker Compose
 
-Adicione ao README principal:
+---
 
-```markdown
-![Lint Status](https://github.com/seu-usuario/TPPE-Steam_Downgrade/workflows/Lint%20Check/badge.svg)
-![CI Status](https://github.com/seu-usuario/TPPE-Steam_Downgrade/workflows/CI%2FCD%20Pipeline/badge.svg)
-```
+## 📚 **Documentação Adicional**
 
-## 🔧 Customização
-
-Para modificar as regras de lint:
-
-1. **Backend**: Edite `.flake8` e `pyproject.toml`
-2. **Frontend**: Edite `frontend/.eslintrc.json`
-3. **Workflows**: Edite os arquivos `.yml` neste diretório
-
-## 📊 Métricas de Qualidade
-
-O pipeline verifica:
-- ✅ Formatação consistente de código
-- ✅ Ordenação correta de imports
-- ✅ Conformidade com guias de estilo
-- ✅ Tipos TypeScript válidos
-- ✅ Build sem erros
-- ✅ Vulnerabilidades de segurança (pipeline completo)
-
-## 🚨 Troubleshooting
-
-### Erro de formatação Black
-```bash
-# Corrigir automaticamente
-make format-backend
-# ou
-black .
-```
-
-### Erro de imports isort
-```bash
-# Corrigir automaticamente
-isort .
-```
-
-### Erro ESLint
-```bash
-# Corrigir automaticamente
-cd frontend && npm run lint -- --fix
-```
-
-### Erro TypeScript
-```bash
-# Verificar tipos
-cd frontend && npm run type-check
-```
+- **🐳 Docker:** [`DOCKER.md`](./DOCKER.md)
+- **📊 UML:** [Diagramas de Classe](https://app.mural.co/t/unb0369/m/unb0369/1746670269569/d64fd62544c0730b4e62710beeeeaea87658c3f9)
+- **💾 Original:** [Steam-Downgrade Java](https://github.com/leomitx10/Steam-Downgrade)
