@@ -40,7 +40,10 @@ export interface Game {
   onSale: boolean;
   rating?: number;
   versions?: GameVersion[];
-  slug: string; 
+  slug: string;
+  average_rating: number;
+  review_count: number;
+  recommendation_percentage: number; 
 }
 
 export interface GameListItem {
@@ -145,6 +148,9 @@ export class CatalogService {
         discount_percent: Number(g.discount_percent),
         cover_image: g.cover_image,
         slug: g.slug || g.id, // Usar slug se disponível, caso contrário usar ID
+        average_rating: Number(g.average_rating) || 0,
+        review_count: Number(g.review_count) || 0,
+        recommendation_percentage: Number(g.recommendation_percentage) || 0,
       }));
       return {
         ...apiResponse,

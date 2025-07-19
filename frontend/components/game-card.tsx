@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Info, Heart, ShoppingCart } from "lucide-react"
+import { Info, Heart, ShoppingCart, Star } from "lucide-react"
 import Image from "next/image"
 import { Game, GameListItem } from "@/lib/catalog-service"
 import { useCatalog } from "@/lib/catalog-context"
@@ -24,6 +24,26 @@ export function GameCard({ game, viewMode }: GameCardProps) {
     }).format(price)
   }
 
+  const renderStars = (rating: number) => {
+    return (
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            className={`h-3 w-3 ${
+              star <= Math.round(rating)
+                ? "text-yellow-400 fill-current"
+                : "text-gray-600"
+            }`}
+          />
+        ))}
+        <span className="text-xs text-slate-400 ml-1">
+          {rating > 0 ? rating.toFixed(1) : "N/A"}
+        </span>
+      </div>
+    )
+  }
+
   if (viewMode === "list") {
     return (
       <Card className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/70 transition-all duration-300 group">
@@ -44,12 +64,18 @@ export function GameCard({ game, viewMode }: GameCardProps) {
                   {game.title}
                 </h3>
                 <p className="text-sm text-slate-400 mb-2">{game.developer?.name}</p>
-                <div className="flex gap-1 flex-wrap">
+                <div className="flex gap-1 flex-wrap mb-2">
                   {game.genre.map((g) => (
                     <Badge key={g} variant="secondary" className="text-xs bg-slate-700 text-slate-300">
                       {g}
                     </Badge>
                   ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  {renderStars(game.average_rating)}
+                  <span className="text-xs text-slate-400">
+                    ({game.review_count} avaliações)
+                  </span>
                 </div>
               </div>
 
@@ -136,6 +162,13 @@ export function GameCard({ game, viewMode }: GameCardProps) {
           {game.title}
         </h3>
         <p className="text-sm text-slate-400 mb-2">{game.developer?.name}</p>
+        
+        <div className="mb-3">
+          {renderStars(game.average_rating)}
+          <span className="text-xs text-slate-400 block mt-1">
+            ({game.review_count} avaliações)
+          </span>
+        </div>
 
         <div className="flex justify-between items-end">
           <div>

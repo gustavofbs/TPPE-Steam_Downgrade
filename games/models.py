@@ -118,6 +118,26 @@ class Game(models.Model):
             return discount.quantize(Decimal("0.01"))
         return Decimal("0.00")
 
+    @property
+    def average_rating(self):
+        """Calcula a avaliação média do jogo"""
+        from django.db.models import Avg
+        result = self.reviews.aggregate(avg_rating=Avg('rating'))['avg_rating']
+        return round(result, 1) if result else 0.0
+    
+    @property
+    def review_count(self):
+        """Retorna o número total de avaliações"""
+        return self.reviews.count()
+    
+    @property
+    def recommendation_percentage(self):
+        """Retorna a porcentagem de recomendações positivas"""
+        total = self.reviews.count()
+        if total == 0:
+            return 0
+        recommended = self.reviews.filter(is_recommended=True).count()
+        return round((recommended / total) * 100, 1)
     
     def __str__(self):
         return self.title

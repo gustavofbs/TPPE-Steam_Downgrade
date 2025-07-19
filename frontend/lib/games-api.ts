@@ -17,6 +17,9 @@ export interface Game {
   genres: string[];
   is_featured: boolean;
   is_active: boolean;
+  average_rating: number;
+  review_count: number;
+  recommendation_percentage: number;
 }
 
 export interface GameSearchResponse {

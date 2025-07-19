@@ -16,6 +16,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { GameDetailProvider, useGameDetail } from "@/lib/game-detail-context"
+import { GameReviews } from "@/components/game-reviews"
 import {
   ShoppingCart,
   Heart,
@@ -329,16 +330,7 @@ function GameDetailContent() {
           </TabsContent>
 
           <TabsContent value="reviews" className="mt-6">
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-white">Avaliações dos usuários</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <p className="text-slate-400">Avaliações em breve...</p>
-                </div>
-              </CardContent>
-            </Card>
+            <GameReviews gameId={Number(game.id)} gameName={game.title} />
           </TabsContent>
         </Tabs>
       </div>

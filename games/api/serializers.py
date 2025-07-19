@@ -79,6 +79,9 @@ class GameListSerializer(serializers.ModelSerializer):
     discount_price = serializers.ReadOnlyField()
     is_on_sale = serializers.ReadOnlyField()
     cover_image = serializers.SerializerMethodField()
+    average_rating = serializers.ReadOnlyField()
+    review_count = serializers.ReadOnlyField()
+    recommendation_percentage = serializers.ReadOnlyField()
     
     def get_cover_image(self, obj):
         """Retorna a URL completa da imagem de capa"""
@@ -95,7 +98,7 @@ class GameListSerializer(serializers.ModelSerializer):
             'id', 'title', 'slug', 'short_description', 'release_date', 
             'base_price', 'discount_percent', 'discount_price', 'is_on_sale',
             'cover_image', 'developer_name', 'publisher_name', 'genres',
-            'is_featured', 'is_active'
+            'is_featured', 'is_active', 'average_rating', 'review_count', 'recommendation_percentage'
         ]
 
 
