@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Slider } from "@/components/ui/slider"
+import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Filter, X } from "lucide-react"
 
@@ -12,6 +12,7 @@ interface Filters {
   genres: number[];
   developers: number[];
   maxPrice: number;
+  minPrice: number;
   onSale: boolean;
   search: string;
 }
@@ -63,6 +64,7 @@ export function FilterSidebar({
     filters.genres.length > 0 ||
     filters.developers.length > 0 ||
     filters.maxPrice < 400 ||
+    filters.minPrice > 0 ||
     filters.onSale ||
     filters.search
 
@@ -160,19 +162,42 @@ export function FilterSidebar({
         {/* Price Range */}
         <div>
           <Label className="text-slate-300 text-sm font-medium mb-3 block">
-            Preço máximo: {formatPrice(filters.maxPrice)}
+            Faixa de Preço
           </Label>
-          <Slider
-            value={[filters.maxPrice]}
-            onValueChange={(value) => onFilterChange("maxPrice", value[0])}
-            max={400}
-            min={0}
-            step={10}
-            className="w-full"
-          />
-          <div className="flex justify-between text-xs text-slate-400 mt-1">
-            <span>R$ 0</span>
-            <span>R$ 400+</span>
+          <div className="space-y-3">
+            <div>
+              <Label htmlFor="min-price" className="text-slate-400 text-xs mb-1 block">
+                Preço Mínimo
+              </Label>
+              <Input
+                id="min-price"
+                type="number"
+                placeholder="0"
+                value={filters.minPrice}
+                onChange={(e) => {
+                  const value = e.target.value === "" ? 0 : Number(e.target.value);
+                  onFilterChange("minPrice", value);
+                }}
+                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                min="0"
+                step="10"
+              />
+            </div>
+            <div>
+              <Label htmlFor="max-price" className="text-slate-400 text-xs mb-1 block">
+                Preço Máximo
+              </Label>
+              <Input
+                id="max-price"
+                type="number"
+                placeholder="400"
+                value={filters.maxPrice === 400 ? "" : filters.maxPrice}
+                onChange={(e) => onFilterChange("maxPrice", Number(e.target.value) || 400)}
+                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                min="0"
+                step="10"
+              />
+            </div>
           </div>
         </div>
 

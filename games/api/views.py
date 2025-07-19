@@ -17,6 +17,7 @@ from .serializers import (
     GameImageSerializer,
     SystemRequirementSerializer
 )
+from .filters import GameFilter
 
 
 class GenreViewSet(mixins.CreateModelMixin,
@@ -95,7 +96,7 @@ class GameViewSet(mixins.CreateModelMixin,
     queryset = Game.objects.all()
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['genres', 'developer', 'publisher', 'is_featured', 'is_active']
+    filterset_class = GameFilter
     search_fields = ['title', 'description', 'short_description']
     ordering_fields = ['title', 'release_date', 'base_price', 'created_at']
     lookup_field = 'slug'
