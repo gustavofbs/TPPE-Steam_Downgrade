@@ -110,6 +110,7 @@ function CatalogPageContent() {
                 filters={{
                   genres: filters.genres || [],
                   developers: filters.developers || [],
+                  minPrice: filters.minPrice || 0,
                   maxPrice: filters.maxPrice || 400,
                   onSale: filters.onSale || false,
                   search: filters.search || ""

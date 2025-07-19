@@ -186,3 +186,22 @@ class UserViewSet(viewsets.ModelViewSet):
         """
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        """
+        Busca usuários por nome de usuário.
+        """
+        query = request.query_params.get('q', '')
+        if not query:
+            return Response({'results': []})
+        
+        # Buscar usuários que contenham a query no username
+        users = User.objects.select_related('profile').filter(
+            username__icontains=query
+        ).exclude(
+            id=request.user.id  # Excluir o usuário atual
+        )[:10]  # Limitar a 10 resultados
+        
+        serializer = UserSerializer(users, many=True, context={'request': request})
+        return Response({'results': serializer.data})

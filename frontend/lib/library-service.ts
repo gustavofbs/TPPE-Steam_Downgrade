@@ -78,9 +78,6 @@ export interface UserStats {
   formattedPlaytime: string;
   recentlyPlayed: LibraryItem[];
   mostPlayed: LibraryItem[];
-  totalAchievements: number;
-  maxAchievements: number;
-  achievementPercentage: number;
 }
 
 // Classe de serviço para biblioteca
@@ -226,21 +223,12 @@ export class LibraryService {
       // Formatar tempo de jogo
       const formattedPlaytime = this.formatPlaytime(totalPlaytime);
       
-      // Simulação de conquistas (já que não temos essa informação no backend)
-      // Em uma implementação real, isso viria de uma API específica
-      const totalAchievements = Math.floor(Math.random() * 500);
-      const maxAchievements = 1000;
-      const achievementPercentage = (totalAchievements / maxAchievements) * 100;
-      
       return {
         totalGames: library.total_games,
         totalPlaytime,
         formattedPlaytime,
         recentlyPlayed,
-        mostPlayed,
-        totalAchievements,
-        maxAchievements,
-        achievementPercentage
+        mostPlayed
       };
     } catch (error) {
       console.error('Erro ao calcular estatísticas do usuário:', error);

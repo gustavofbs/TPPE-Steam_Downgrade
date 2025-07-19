@@ -323,14 +323,7 @@ function LibraryPageContent() {
 
         {/* Sidebar */}
         <div className="w-full md:w-80 space-y-6">
-          <LibraryStats user={{
-            username: user?.username || 'Usuário',
-            totalGames: userStats?.totalGames || 0,
-            installedGames: convertLibraryItems.filter(g => g.isInstalled).length,
-            totalPlaytime: userStats?.formattedPlaytime || '0 horas',
-            totalAchievements: userStats?.totalAchievements || 0,
-            maxAchievements: userStats?.maxAchievements || 0,
-          }} />
+          <LibraryStats />
           <FriendsPanel />
         </div>
       </div>
