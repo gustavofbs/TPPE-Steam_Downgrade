@@ -195,8 +195,10 @@ SPECTACULAR_SETTINGS = {
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # Permitir todas as origens em desenvolvimento
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
+    'http://localhost:3000',  # Frontend Next.js
+    'http://127.0.0.1:3000',  # Frontend Next.js
+    'http://localhost:8000',  # Backend Django
+    'http://127.0.0.1:8000',  # Backend Django
 ]
 
 # Email settings (for development - prints emails to console)

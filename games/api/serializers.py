@@ -41,6 +41,16 @@ class SystemRequirementSerializer(serializers.ModelSerializer):
 
 class GameImageSerializer(serializers.ModelSerializer):
     """Serializer para o modelo GameImage"""
+    image = serializers.SerializerMethodField()
+    
+    def get_image(self, obj):
+        """Retorna a URL completa da imagem"""
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
     
     class Meta:
         model = GameImage
@@ -68,6 +78,16 @@ class GameListSerializer(serializers.ModelSerializer):
     genres = serializers.StringRelatedField(many=True, read_only=True)
     discount_price = serializers.ReadOnlyField()
     is_on_sale = serializers.ReadOnlyField()
+    cover_image = serializers.SerializerMethodField()
+    
+    def get_cover_image(self, obj):
+        """Retorna a URL completa da imagem de capa"""
+        if obj.cover_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.cover_image.url)
+            return obj.cover_image.url
+        return None
     
     class Meta:
         model = Game
@@ -89,6 +109,26 @@ class GameDetailSerializer(serializers.ModelSerializer):
     system_requirements = SystemRequirementSerializer(many=True, read_only=True)
     discount_price = serializers.ReadOnlyField()
     is_on_sale = serializers.ReadOnlyField()
+    cover_image = serializers.SerializerMethodField()
+    banner_image = serializers.SerializerMethodField()
+    
+    def get_cover_image(self, obj):
+        """Retorna a URL completa da imagem de capa"""
+        if obj.cover_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.cover_image.url)
+            return obj.cover_image.url
+        return None
+    
+    def get_banner_image(self, obj):
+        """Retorna a URL completa da imagem de banner"""
+        if obj.banner_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.banner_image.url)
+            return obj.banner_image.url
+        return None
     
     class Meta:
         model = Game
