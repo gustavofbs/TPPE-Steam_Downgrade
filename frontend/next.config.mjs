@@ -11,6 +11,8 @@ const nextConfig = {
       domains: ['localhost'],
       unoptimized: true,
     },
+    // Configuração para Docker com output standalone
+    output: 'standalone',
   };
   
   export default nextConfig;
