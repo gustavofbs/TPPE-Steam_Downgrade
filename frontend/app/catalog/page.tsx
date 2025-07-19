@@ -18,7 +18,7 @@ import { GameCard } from "@/components/game-card"
 import { FilterSidebar } from "@/components/filter-sidebar"
 import { Gamepad2, Filter, Search, Grid3X3, List, Loader2 } from "lucide-react"
 import { CatalogProvider, useCatalog } from "@/lib/catalog-context"
-import { GameFilters } from "@/lib/catalog-service"
+import { Game, GameFilters } from "@/lib/catalog-service"
 
 function CatalogPageContent() {
   const {
@@ -221,7 +221,7 @@ function CatalogPageContent() {
                 }`}
               >
                 {games.map((game) => (
-                  <GameCard key={game.id} game={game} viewMode={viewMode} />
+                  <GameCard key={game.id} game={game as unknown as Game} viewMode={viewMode} />
                 ))}
               </div>
             ) : !isLoading && !error ? (

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Info, Heart, ShoppingCart } from "lucide-react"
 import Image from "next/image"
-import { Game } from "@/lib/catalog-service"
+import { Game, GameListItem } from "@/lib/catalog-service"
 import { useCatalog } from "@/lib/catalog-context"
 import { useState } from "react"
 import Link from "next/link"
@@ -43,7 +43,7 @@ export function GameCard({ game, viewMode }: GameCardProps) {
                 <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-blue-300 transition-colors">
                   {game.title}
                 </h3>
-                <p className="text-sm text-slate-400 mb-2">{game.developer}</p>
+                <p className="text-sm text-slate-400 mb-2">{game.developer?.name}</p>
                 <div className="flex gap-1 flex-wrap">
                   {game.genre.map((g) => (
                     <Badge key={g} variant="secondary" className="text-xs bg-slate-700 text-slate-300">
@@ -82,7 +82,7 @@ export function GameCard({ game, viewMode }: GameCardProps) {
                   >
                     <Heart className="h-4 w-4" />
                   </Button>
-                  <Link href={`/catalog/${game.id}`}>
+                  <Link href={`/games/${game.slug}`}>
                     <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                       <Info className="h-4 w-4 mr-1" />
                       Detalhes
@@ -135,7 +135,7 @@ export function GameCard({ game, viewMode }: GameCardProps) {
         <h3 className="text-lg font-semibold text-white mb-2 truncate group-hover:text-blue-300 transition-colors">
           {game.title}
         </h3>
-        <p className="text-sm text-slate-400 mb-2">{game.developer}</p>
+        <p className="text-sm text-slate-400 mb-2">{game.developer?.name}</p>
 
         <div className="flex justify-between items-end">
           <div>
@@ -166,7 +166,7 @@ export function GameCard({ game, viewMode }: GameCardProps) {
             >
               <Heart className="h-4 w-4" />
             </Button>
-            <Link href={`/catalog/${game.id}`}>
+            <Link href={`/games/${game.slug}`}>
               <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                 Detalhes
               </Button>

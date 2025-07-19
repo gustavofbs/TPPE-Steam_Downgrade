@@ -1,6 +1,26 @@
 // Serviço para gerenciar o catálogo de jogos
 import { gamesAPI } from './api';
 
+export interface Developer {
+  id: number;
+  name: string;
+  description: string;
+  website: string;
+  founded_date: string | null;
+  logo: string;
+  is_active: boolean;
+}
+
+export interface Publisher {
+  id: number;
+  name: string;
+  description: string;
+  website: string;
+  founded_date: string | null;
+  logo: string;
+  is_active: boolean;
+}
+
 export interface Game {
   id: string;
   title: string;
@@ -9,13 +29,39 @@ export interface Game {
   discount: number;
   image: string;
   genre: string[];
-  developer: string;
-  publisher?: string;
-  releaseDate?: string;
+  developer?: Developer;
+  publisher?: Publisher;
+  release_date: string;
   description?: string;
+  base_price: number; 
+  discount_percent: number;
+  discount_price: number;  
+  cover_image: string; 
   onSale: boolean;
   rating?: number;
   versions?: GameVersion[];
+  slug: string; 
+}
+
+export interface GameListItem {
+  id: string;
+  title: string;
+  price: number;
+  originalPrice: number | null;
+  discount: number;
+  image: string;
+  genre: string[];
+  developer: string; // string, não Developer
+  publisher: string; // string, não Publisher
+  releaseDate: string;
+  description?: string;
+  base_price: number;
+  discount_price: number;
+  discount_percent: number;
+  cover_image: string;
+  onSale: boolean;
+  release_date: string; // <- adicione isso
+  slug: string;     
 }
 
 export interface GameVersion {
@@ -42,7 +88,7 @@ export interface CatalogResponse {
   count: number;
   next: string | null;
   previous: string | null;
-  results: Game[];
+  results: GameListItem[];
 }
 
 export class CatalogService {
@@ -74,6 +120,13 @@ export class CatalogService {
       if (filters.pageSize) params.page_size = filters.pageSize.toString();
       
       const apiResponse = await gamesAPI.getGames(params);
+
+      console.log('Resposta da API:', apiResponse);  
+
+      if (!apiResponse.results) {
+        throw new Error("Resposta inválida da API: 'results' não existe");
+      }
+      
       const mappedResults = apiResponse.results.map((g: any) => ({
         id: g.id,
         title: g.title,
@@ -87,6 +140,11 @@ export class CatalogService {
         releaseDate: g.release_date,
         description: g.short_description,
         onSale: !!g.is_on_sale,
+        base_price: Number(g.base_price),
+        discount_price: Number(g.discount_price),
+        discount_percent: Number(g.discount_percent),
+        cover_image: g.cover_image,
+        slug: g.slug || g.id, // Usar slug se disponível, caso contrário usar ID
       }));
       return {
         ...apiResponse,
@@ -99,11 +157,11 @@ export class CatalogService {
   }
 
   // Obter detalhes de um jogo
-  async getGameDetails(gameId: string): Promise<Game> {
+  async getGameDetails(slug: string): Promise<Game> {
     try {
-      return await gamesAPI.getGame(gameId);
+      return await gamesAPI.getGame(slug);
     } catch (error) {
-      console.error(`Erro ao obter detalhes do jogo ${gameId}:`, error);
+      console.error(`Erro ao obter detalhes do jogo ${slug}:`, error);
       throw error;
     }
   }
@@ -150,9 +208,9 @@ export class CatalogService {
   }
 
   // Comprar jogo (adicionar à biblioteca)
-  async purchaseGame(gameId: string): Promise<void> {
+  async purchaseGame(gameId: string, versionId?: string): Promise<void> {
     try {
-      await gamesAPI.purchaseGame(gameId);
+      await gamesAPI.purchaseGame(gameId, versionId);
     } catch (error) {
       console.error(`Erro ao comprar jogo ${gameId}:`, error);
       throw error;

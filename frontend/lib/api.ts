@@ -27,7 +27,23 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     headers: finalHeaders,
   });
 
-  const data = await response.json();
+  // Verificar se a resposta é JSON antes de tentar fazer o parse
+  const contentType = response.headers.get('content-type');
+  let data;
+  
+  if (contentType && contentType.includes('application/json')) {
+    try {
+      data = await response.json();
+    } catch (error: any) {
+      console.error('[fetchAPI] Erro ao fazer parse do JSON:', error);
+      throw new Error(`Erro ao processar resposta do servidor: ${error.message || 'Erro desconhecido'}`);
+    }
+  } else {
+    // Se não for JSON, obter o texto da resposta
+    const text = await response.text();
+    console.error('[fetchAPI] Resposta não-JSON:', text);
+    throw new Error(`Resposta inesperada do servidor (${response.status})`);
+  }
 
   if (response.status === 401) {
     console.warn('[fetchAPI] 401 Unauthorized');
@@ -39,7 +55,7 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
 
   if (!response.ok) {
     console.error('[fetchAPI] Erro:', data);
-    throw new Error(data.detail || 'Erro ao processar solicitação');
+    throw new Error(data.detail || `Erro ao processar solicitação: ${response.status}`);
   }
 
   return data;
@@ -120,17 +136,17 @@ export const gamesAPI = {
   // Get all games with optional filters
   getGames: async (params: Record<string, string> = {}) => {
     const queryParams = new URLSearchParams(params).toString();
-    return fetchAPI(`/games/games${queryParams ? `?${queryParams}` : ''}`);
+    return fetchAPI(`/games/games/${queryParams ? `?${queryParams}` : ''}`);
   },
   
-  // Get a single game by ID
-  getGame: async (gameId: string) => {
-    return fetchAPI(`/games/${gameId}/`);
+  // Get a single game by ID or slug
+  getGame: async (idOrSlug: string) => {
+    return fetchAPI(`/games/games/${idOrSlug}/`);
   },
-  
+
   // Get game versions (for downgrade functionality)
-  getGameVersions: async (gameId: string) => {
-    return fetchAPI(`/games/${gameId}/versions/`);
+  getGameVersions: async (gameSlug: string) => {
+    return fetchAPI(`/games/games/${gameSlug}/versions/`);
   },
 
   // Get all available genres
@@ -152,10 +168,15 @@ export const gamesAPI = {
   },
 
   // Purchase a game (add to library)
-  purchaseGame: async (gameId: string) => {
+  purchaseGame: async (gameId: string, versionId?: string) => {
+    const body: Record<string, string> = { game_id: gameId };
+    if (versionId) {
+      body.version_id = versionId;
+    }
+
     return fetchAPI(`/library/purchase/`, {
       method: 'POST',
-      body: JSON.stringify({ game_id: gameId }),
+      body: JSON.stringify(body),
     });
   }
 };

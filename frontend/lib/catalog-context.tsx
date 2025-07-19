@@ -1,10 +1,10 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { CatalogService, Game, GameFilters, CatalogResponse } from './catalog-service';
+import { CatalogService, Game, GameFilters, CatalogResponse, GameListItem } from './catalog-service';
 
 interface CatalogContextType {
-  games: Game[];
+  games: GameListItem[];
   isLoading: boolean;
   error: string | null;
   genres: { id: number, name: string }[];
@@ -34,7 +34,7 @@ export function useCatalog() {
 
 // Provider component
 export function CatalogProvider({ children }: { children: ReactNode }) {
-  const [games, setGames] = useState<Game[]>([]);
+  const [games, setGames] = useState<GameListItem[]>([]);
   const [genres, setGenres] = useState<{ id: number, name: string }[]>([]);
   const [developers, setDevelopers] = useState<{ id: number, name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
