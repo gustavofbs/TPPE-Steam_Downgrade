@@ -6,6 +6,38 @@ from users.models import Profile
 class ProfileSerializer(serializers.ModelSerializer):
     """Serializer para o modelo Profile"""
     
+    def to_representation(self, instance):
+        """Customiza a representação para incluir avatar como URL absoluta"""
+        data = super().to_representation(instance)
+        # Converter avatar para URL absoluta
+        if instance.avatar:
+            request = self.context.get('request')
+            if request:
+                # Sempre usar build_absolute_uri para garantir URL completa
+                data['avatar'] = request.build_absolute_uri(instance.avatar.url)
+            else:
+                # Fallback se não houver request no context
+                avatar_url = instance.avatar.url
+                if not avatar_url.startswith('http'):
+                    # Se não é uma URL completa, adicionar o domínio padrão
+                    data['avatar'] = f"http://localhost:8000{avatar_url}"
+                else:
+                    data['avatar'] = avatar_url
+        else:
+            data['avatar'] = None
+        return data
+    
+    def update(self, instance, validated_data):
+        """Customiza o update para ignorar avatar se for string (base64 ou URL)"""
+        avatar_data = validated_data.get('avatar')
+        
+        # Se avatar é uma string (base64 ou URL), ignorar para evitar erro de validação
+        if avatar_data and isinstance(avatar_data, str):
+            # Ignorar dados de avatar que são strings (base64, URLs, etc)
+            validated_data.pop('avatar', None)
+        
+        return super().update(instance, validated_data)
+    
     class Meta:
         model = Profile
         fields = ['bio', 'birth_date', 'avatar']

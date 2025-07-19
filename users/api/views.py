@@ -1,6 +1,7 @@
 from rest_framework import viewsets, generics, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
@@ -84,19 +85,79 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = ProfileSerializer(profile)
         return Response(serializer.data)
     
-    @action(detail=True, methods=['put'], serializer_class=ProfileSerializer)
+    @action(detail=True, methods=['put'])
     def update_profile(self, request, pk=None):
         """
-        Atualiza o perfil de um usuário específico.
+        Atualiza o perfil e dados básicos de um usuário específico.
         """
         user = self.get_object()
         profile = get_object_or_404(Profile, user=user)
-        serializer = ProfileSerializer(profile, data=request.data)
         
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Atualizar dados básicos do usuário
+        user_data = {}
+        if 'first_name' in request.data:
+            user_data['first_name'] = request.data['first_name']
+        if 'last_name' in request.data:
+            user_data['last_name'] = request.data['last_name']
+        if 'email' in request.data:
+            user_data['email'] = request.data['email']
+        
+        if user_data:
+            user_serializer = UserUpdateSerializer(user, data=user_data, partial=True)
+            if user_serializer.is_valid():
+                user_serializer.save()
+            else:
+                return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Atualizar dados do perfil
+        profile_data = {}
+        if 'bio' in request.data:
+            profile_data['bio'] = request.data['bio']
+        if 'birth_date' in request.data:
+            profile_data['birth_date'] = request.data['birth_date']
+        if 'avatar' in request.data:
+            profile_data['avatar'] = request.data['avatar']
+        
+        if profile_data:
+            profile_serializer = ProfileSerializer(profile, data=profile_data, partial=True, context={'request': request})
+            if profile_serializer.is_valid():
+                profile_serializer.save()
+            else:
+                return Response(profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Retornar dados completos do usuário atualizado
+        user_serializer = UserSerializer(user, context={'request': request})
+        return Response(user_serializer.data)
+    
+    @action(detail=True, methods=['post'], parser_classes=[MultiPartParser, FormParser])
+    def upload_avatar(self, request, pk=None):
+        """
+        Endpoint específico para upload de avatar como arquivo.
+        """
+        user = self.get_object()
+        profile = get_object_or_404(Profile, user=user)
+        
+        if 'avatar' not in request.FILES:
+            return Response({'error': 'Nenhum arquivo de avatar fornecido'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        avatar_file = request.FILES['avatar']
+        
+        # Validar tipo de arquivo
+        allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+        if avatar_file.content_type not in allowed_types:
+            return Response({'error': 'Tipo de arquivo não permitido. Use JPEG, PNG, GIF ou WebP.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validar tamanho do arquivo (máximo 5MB)
+        if avatar_file.size > 5 * 1024 * 1024:
+            return Response({'error': 'Arquivo muito grande. Máximo 5MB.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Atualizar o avatar
+        profile.avatar = avatar_file
+        profile.save()
+        
+        # Retornar dados atualizados do usuário
+        user_serializer = UserSerializer(user, context={'request': request})
+        return Response(user_serializer.data)
     
     @action(detail=True, methods=['post'], serializer_class=PasswordChangeSerializer)
     def change_password(self, request, pk=None):
